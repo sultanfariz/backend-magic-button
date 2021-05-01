@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { response, isEmpty, hashPassword } = require('../libs/bcrypt');
+const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
 
 module.exports = {
@@ -103,7 +103,7 @@ module.exports = {
       return response(res, {
         code: 200,
         success: true,
-        message: 'Successfuly update user',
+        message: 'Successfully update user',
         content: updatedUser
       });
     } catch (error) {
@@ -132,7 +132,7 @@ module.exports = {
       return response(res, {
         code: 200,
         success: true,
-        message: 'Successfuly delete user!'
+        message: 'Successfully delete user!'
       });
     } catch (error) {
       return response(res, {

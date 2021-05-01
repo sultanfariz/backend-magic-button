@@ -1,8 +1,10 @@
 const User = require('../models/User');
-const { isEmpty, response, hashPassword } = require('../libs/bcrypt');
+const { isEmpty, response, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError, WrongPasswordError } = require('../errors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
+let refreshTokens = [];
 
 module.exports = {
   login: async (req, res) => {
@@ -25,13 +27,17 @@ module.exports = {
       const checkPassword = await bcrypt.compare(password, user.password);
       if (!checkPassword) throw new WrongPasswordError('Your password not match with our records!');
 
-      const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET);
+      const accessToken = generateAccessToken(user);
+      const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+      refreshTokens.push(refreshToken)
+
+      const token = jwt.sign({ username: user.username }, process.env.ACCESS_JWT_SECRET);
 
       res.cookie('token', token, { httpOnly: true });
       return response(res, {
         code: 200,
         success: true,
-        message: 'Login successfuly!',
+        message: 'Login successfully!',
         content: {
           user,
           token
@@ -54,6 +60,12 @@ module.exports = {
       });
     }
   },
+  // app.delete('/logout', 
+  logout: async (req, res) => {
+    refreshTokens = refreshTokens.filter(token => token !== req.body.token);
+    res.sendStatus(204);
+  },
+  
   register: async (req, res) => {
     const { firstName, lastName, username, email, password } = req.body;
 
@@ -68,13 +80,13 @@ module.exports = {
         password: hashedPassword
       });
 
-      const token = jwt.sign({ username: createdUser.username }, process.env.JWT_SECRET);
+      const token = jwt.sign({ username: createdUser.username }, process.env.ACCESS_JWT_SECRET);
 
       res.cookie('token', token, { httpOnly: true });
       return response(res, {
         code: 201,
         success: true,
-        message: 'Register successfuly!',
+        message: 'Register successfully!',
         content: {
           user: createdUser,
           token
