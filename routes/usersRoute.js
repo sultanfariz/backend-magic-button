@@ -14,8 +14,8 @@ router.post('/login', Auth.login);
 router.post('/logout', Auth.logout);
 
 //test auth token jwt
-router.post('/',  authenticateToken, async function(req, res, next) {
-    res.status(201).json({message: "OK"});
+router.post('/', authenticateToken, async function (req, res, next) {
+  res.status(201).json({ message: 'OK' });
 });
 
 module.exports = router;

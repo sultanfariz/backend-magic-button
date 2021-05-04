@@ -3,5 +3,5 @@ const WrongPasswordError = require('./WrongPasswordError');
 
 module.exports = {
   NotFoundError,
-  WrongPasswordError
+  WrongPasswordError,
 };

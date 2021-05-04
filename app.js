@@ -14,10 +14,12 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(helmet());
 app.use(compression());
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
+app.use(
+  morgan(':method :url :status :res[content-length] - :response-time ms')
+);
 app.use(
   cors({
-    origin: ['http://localhost:3000']
+    origin: ['http://localhost:3000'],
   })
 );
 app.use('/users', usersRoutes);

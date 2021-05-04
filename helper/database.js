@@ -2,7 +2,12 @@ const { connect } = require('mongoose');
 
 async function connectDb() {
   try {
-    await connect(process.env.DB_URI, { useCreateIndex: true, useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
+    await connect(process.env.DB_URI, {
+      useCreateIndex: true,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    });
     console.log('MongoDB Connected!');
   } catch (err) {
     console.error(err.message);
@@ -11,5 +16,5 @@ async function connectDb() {
 }
 
 module.exports = {
-  connectDb
+  connectDb,
 };

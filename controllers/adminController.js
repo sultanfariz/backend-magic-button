@@ -3,70 +3,36 @@ const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
 
 module.exports = {
-  getAll: async (req, res) => {
-    try {
-      const users = await User.find();
-
-      if (isEmpty(users)) {
-        throw new NotFoundError('Users Not Found!');
-      }
-
-      return response(res, {
-        code: 200,
-        success: true,
-        message: 'Successfully get users data!',
-        content: users,
-      });
-    } catch (error) {
-      if (error.name === 'NotFoundError') {
-        return response(res, {
-          code: 404,
-          success: false,
-          message: error.message,
-        });
-      }
-
-      return response(res, {
-        code: 500,
-        success: false,
-        message: error.message || 'Something went wrong!',
-        content: error,
-      });
-    }
-  },
-  /**
-   * Get specific user data with {username} parameter.
-   *
-   * @param {Express.Request} req
-   * @param {Express.Response} res
-   *
-   * @returns {Express.Response} Return user data with specific user data by querying
-   * {username} parameter from database
-   */
-  getOne: async (req, res) => {
-    const { username } = req.params;
+  register: async (req, res) => {
+    const { firstName, lastName, username, email, password } = req.body;
 
     try {
-      const user = await User.findOne({ username });
+      const hashedPassword = await hashPassword(password);
 
-      if (isEmpty(user))
-        throw new NotFoundError(`User with username ${username} not found!`);
+      const createdUser = await User.create({
+        firstName,
+        lastName,
+        username,
+        email,
+        password: hashedPassword,
+      });
 
+      const token = jwt.sign(
+        { username: createdUser.username },
+        process.env.ACCESS_JWT_SECRET
+      );
+
+      res.cookie('token', token, { httpOnly: true });
       return response(res, {
-        code: 200,
+        code: 201,
         success: true,
-        message: `Successfully get ${username} data!`,
-        content: user,
+        message: 'Register successfully!',
+        content: {
+          user: createdUser,
+          token,
+        },
       });
     } catch (error) {
-      if (error.name === 'NotFoundError') {
-        return response(res, {
-          code: 404,
-          success: false,
-          message: error.message,
-        });
-      }
-
       return response(res, {
         code: 500,
         success: false,
