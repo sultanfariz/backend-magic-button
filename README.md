@@ -1,11 +1,11 @@
 ## Quick Start
 
-```javascript
-// Install dependencies for server & client
+```
+// Install dependencies for server
 npm install && npm run client-install
 
 // Run client & server with concurrently
 npm run start
 
-// Server runs on http://localhost:5000 and client on http://localhost:3000
+// Server runs on http://localhost:4000
 ```
