@@ -5,7 +5,7 @@
 npm install && npm run client-install
 
 // Run client & server with concurrently
-npm run dev
+npm run start
 
 // Server runs on http://localhost:5000 and client on http://localhost:3000
 ```
