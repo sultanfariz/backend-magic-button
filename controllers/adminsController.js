@@ -1,37 +1,44 @@
 const User = require('../models/User');
+const Admin = require('../models/Admin');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
 
 module.exports = {
-  register: async (req, res) => {
-    const { firstName, lastName, username, email, password } = req.body;
+  addAdmin: async (req, res) => {
+    const { username, password } = req.body;
 
     try {
       const hashedPassword = await hashPassword(password);
 
       const createdUser = await User.create({
-        firstName,
-        lastName,
         username,
-        email,
         password: hashedPassword,
+        role: "admin"
+      });
+      
+      const createdAdmin = await Admin.create({
+        user: createdUser._id
       });
 
-      const token = jwt.sign(
-        { username: createdUser.username },
-        process.env.ACCESS_JWT_SECRET
-      );
+      createdUser.admin = createdAdmin._id;
+      await createdUser.save();
 
-      res.cookie('token', token, { httpOnly: true });
+      // const token = jwt.sign(
+      //   { username: createdUser.username },
+      //   process.env.ACCESS_JWT_SECRET
+      // );
+
+      // res.cookie('token', token, { httpOnly: true });
       return response(res, {
         code: 201,
         success: true,
         message: 'Register successfully!',
         content: {
-          user: createdUser,
-          token,
+          user: { createdUser, createdAdmin },
+          // token,
         },
       });
+      
     } catch (error) {
       return response(res, {
         code: 500,

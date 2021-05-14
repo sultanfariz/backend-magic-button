@@ -11,6 +11,25 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      required: true,
+      enum: [
+        "admin", "mahasiswa", "dosen"
+      ]
+    },
+    admin: {
+      type: Schema.Types.ObjectId, 
+      ref: 'Admin'
+    },
+    mahasiswa: {
+      type: Schema.Types.ObjectId, 
+      ref: 'Mahasiswa'
+    },
+    dosen: {
+      type: Schema.Types.ObjectId, 
+      ref: 'Dosen'
+    },
   },
   {
     discriminatorKey: 'itemtype',

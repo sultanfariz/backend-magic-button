@@ -6,6 +6,7 @@ const compression = require('compression');
 const morgan = require('morgan');
 
 const usersRoutes = require('./routes/usersRoute');
+const adminsRoutes = require('./routes/adminsRoute');
 
 const app = express();
 
@@ -22,6 +23,8 @@ app.use(
     origin: ['http://localhost:3000'],
   })
 );
+
 app.use('/users', usersRoutes);
+app.use('/admins', adminsRoutes);
 
 module.exports = app;

@@ -3,6 +3,7 @@ const { isEmpty, response, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError, WrongPasswordError } = require('../errors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { authenticateToken, generateAccessToken } = require('../helper/jwt');
 
 let refreshTokens = [];
 
@@ -23,7 +24,7 @@ module.exports = {
       });
 
       if (isEmpty(user))
-        throw new NotFoundError("Username or email doesn't exists!");
+        throw new NotFoundError("Username doesn't exists!");
 
       const checkPassword = await bcrypt.compare(password, user.password);
       if (!checkPassword)
@@ -31,9 +32,9 @@ module.exports = {
           'Your password not match with our records!'
         );
 
-      const accessToken = generateAccessToken(user);
-      const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-      refreshTokens.push(refreshToken);
+      // const accessToken = generateAccessToken(user);
+      // const refreshToken = jwt.sign(user, process.env.REFRESH_JWT_SECRET);
+      // refreshTokens.push(refreshToken);
 
       const token = jwt.sign(
         { username: user.username },
@@ -70,10 +71,9 @@ module.exports = {
       });
     }
   },
-  
+
   logout: async (req, res) => {
-    refreshTokens = refreshTokens.filter((token) => token !== req.body.token);
-    res.sendStatus(204);
+    res.status(202).clearCookie('token').send('cookie cleared');
   },
 
   register: async (req, res) => {
