@@ -2,17 +2,17 @@ const { Schema, model } = require('mongoose');
 // const User = require('./User');
 
 // const adminSchema = User.discriminator(
-  //   'Admin',
+//   'Admin',
 const adminSchema = new Schema(
-    {
-      user: {
-        type: Schema.Types.ObjectId, 
-        ref: 'User'
-      },
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
-    {
-      timestamps: true,
-    }
+  },
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = model('Admin', adminSchema);

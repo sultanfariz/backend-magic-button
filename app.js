@@ -5,8 +5,10 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 
+const authRoutes = require('./routes/authRoute');
 const usersRoutes = require('./routes/usersRoute');
 const adminsRoutes = require('./routes/adminsRoute');
+const mahasiswasRoutes = require('./routes/mahasiswasRoute');
 
 const app = express();
 
@@ -24,7 +26,9 @@ app.use(
   })
 );
 
+app.use('/', authRoutes);
 app.use('/users', usersRoutes);
 app.use('/admins', adminsRoutes);
+app.use('/mahasiswa', mahasiswasRoutes);
 
 module.exports = app;

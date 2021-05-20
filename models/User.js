@@ -14,21 +14,19 @@ const userSchema = new Schema(
     role: {
       type: String,
       required: true,
-      enum: [
-        "admin", "mahasiswa", "dosen"
-      ]
+      enum: ['admin', 'mahasiswa', 'dosen'],
     },
     admin: {
-      type: Schema.Types.ObjectId, 
-      ref: 'Admin'
+      type: Schema.Types.ObjectId,
+      ref: 'Admin',
     },
     mahasiswa: {
-      type: Schema.Types.ObjectId, 
-      ref: 'Mahasiswa'
+      type: Schema.Types.ObjectId,
+      ref: 'Mahasiswa',
     },
     dosen: {
-      type: Schema.Types.ObjectId, 
-      ref: 'Dosen'
+      type: Schema.Types.ObjectId,
+      ref: 'Dosen',
     },
   },
   {

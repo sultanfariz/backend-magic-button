@@ -17,14 +17,12 @@ module.exports = {
           {
             username,
           },
-          {
-            email: username,
-          },
         ],
       });
 
-      if (isEmpty(user))
-        throw new NotFoundError("Username doesn't exists!");
+      console.log(user);
+
+      if (isEmpty(user)) throw new NotFoundError("Username doesn't exists!");
 
       const checkPassword = await bcrypt.compare(password, user.password);
       if (!checkPassword)

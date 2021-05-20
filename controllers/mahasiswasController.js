@@ -1,10 +1,10 @@
 const User = require('../models/User');
-const Admin = require('../models/Admin');
+const Mahasiswa = require('../models/Mahasiswa');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
 
 module.exports = {
-  addAdmin: async (req, res) => {
+  addMahasiswa: async (req, res) => {
     const { username, password } = req.body;
 
     try {
@@ -13,29 +13,22 @@ module.exports = {
       const createdUser = await User.create({
         username,
         password: hashedPassword,
-        role: 'admin',
+        role: 'mahasiswa',
       });
 
-      const createdAdmin = await Admin.create({
+      const createdMahasiswa = await Mahasiswa.create({
         user: createdUser._id,
       });
 
-      createdUser.admin = createdAdmin._id;
+      createdUser.mahasiswa = createdMahasiswa._id;
       await createdUser.save();
 
-      // const token = jwt.sign(
-      //   { username: createdUser.username },
-      //   process.env.ACCESS_JWT_SECRET
-      // );
-
-      // res.cookie('token', token, { httpOnly: true });
       return response(res, {
         code: 201,
         success: true,
         message: 'Register successfully!',
         content: {
-          user: { createdUser, createdAdmin },
-          // token,
+          user: { createdUser, createdMahasiswa },
         },
       });
     } catch (error) {
