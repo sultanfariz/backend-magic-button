@@ -7,10 +7,10 @@ module.exports = {
   authenticateToken: (req, res, next) => {
     try {
       const authHeader = req.headers['authorization'];
-      const token = authHeader && authHeader.split(' ')[1];
-      if (token == null) throw new NotFoundError('Token Not Found');
+      res.locals.token = authHeader && authHeader.split(' ')[1];
+      if (res.locals.token == null) throw new NotFoundError('Token Not Found');
 
-      jwt.verify(token, process.env.ACCESS_JWT_SECRET, (err, user) => {
+      jwt.verify(res.locals.token, process.env.ACCESS_JWT_SECRET, (err, user) => {
         if (err)
           throw new WrongIdentityError(
             "Your token doesn't matched our credentials"
@@ -36,18 +36,7 @@ module.exports = {
   },
 
   parseJwtPayload: (token) => {
-    // var base64Url = token.split('.')[1];
-    // var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    // var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-    //     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    // }).join(''));
-
-    // return JSON.parse(jsonPayload);
-
-    var decoded = jwt_decode(token);
-    console.log(decoded);
-    return decoded;
-    /*{exp: 10012016 name: john doe, scope:['admin']}*/
+    return jwt_decode(token);
   },
 
   generateAccessToken: (user) => {
