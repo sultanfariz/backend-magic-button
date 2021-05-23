@@ -35,7 +35,10 @@ module.exports = {
       // refreshTokens.push(refreshToken);
 
       const token = jwt.sign(
-        { username: user.username },
+        {
+          username: user.username,
+          role: user.role,
+        },
         process.env.ACCESS_JWT_SECRET
       );
 

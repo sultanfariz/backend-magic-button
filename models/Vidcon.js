@@ -9,6 +9,7 @@ const vidconSchema = new Schema(
     platform: {
       type: String,
       required: true,
+      enum: ['Zoom', 'Cisco Webex', 'Microsoft Teams', 'Google Meet'],
     },
   },
   {

@@ -69,43 +69,8 @@ module.exports = {
     }
   },
 
-  addLinkVidcon: async (req, res) => {
+  checkPresensi: async (req, res) => {
     const { link, platform } = req.body;
-
-    try {
-      const createdLink = await Link.create({
-        link,
-        type: 'vidcon',
-      });
-
-      const createdVidcon = await Vidcon.create({
-        link: createdLink._id,
-        platform,
-      });
-
-      createdLink.vidcon = createdVidcon._id;
-      await createdLink.save();
-
-      return response(res, {
-        code: 201,
-        success: true,
-        message: 'Link inserted successfully!',
-        content: {
-          link: { createdLink, createdVidcon },
-        },
-      });
-    } catch (error) {
-      return response(res, {
-        code: 500,
-        success: false,
-        message: error.message || 'Something went wrong!',
-        content: error,
-      });
-    }
-  },
-  
-  addLinkRecord: async (req, res) => {
-    const { link } = req.body;
 
     try {
       const createdLink = await Link.create({

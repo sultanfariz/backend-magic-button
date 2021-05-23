@@ -40,13 +40,7 @@ module.exports = {
       });
     }
   },
-  /**
-   * Update user data
-   * @param {Express.Request} req
-   * @param {Express.Response} res
-   *
-   * @returns {Express.Response} Return updated user data
-   */
+
   update: async (req, res) => {
     const { id } = req.params;
     const { firstName, lastName, username, email, password } = req.body;
@@ -81,14 +75,7 @@ module.exports = {
       });
     }
   },
-  /**
-   * Delete user data from database
-   *
-   * @param {Express.Request} req
-   * @param {Express.Response} res
-   *
-   * @returns {Express.Response} Return success messages after delete user
-   */
+
   delete: async (req, res) => {
     const { id } = req.params;
 

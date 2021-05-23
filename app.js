@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoute');
 const usersRoutes = require('./routes/usersRoute');
 const adminsRoutes = require('./routes/adminsRoute');
 const mahasiswasRoutes = require('./routes/mahasiswasRoute');
+const linksRoutes = require('./routes/linksRoute');
 
 const app = express();
 
@@ -30,5 +31,6 @@ app.use('/', authRoutes);
 app.use('/users', usersRoutes);
 app.use('/admins', adminsRoutes);
 app.use('/mahasiswa', mahasiswasRoutes);
+app.use('/link', linksRoutes);
 
 module.exports = app;

@@ -10,14 +10,18 @@ module.exports = {
       res.locals.token = authHeader && authHeader.split(' ')[1];
       if (res.locals.token == null) throw new NotFoundError('Token Not Found');
 
-      jwt.verify(res.locals.token, process.env.ACCESS_JWT_SECRET, (err, user) => {
-        if (err)
-          throw new WrongIdentityError(
-            "Your token doesn't matched our credentials"
-          );
-        req.user = user;
-        next();
-      });
+      jwt.verify(
+        res.locals.token,
+        process.env.ACCESS_JWT_SECRET,
+        (err, user) => {
+          if (err)
+            throw new WrongIdentityError(
+              "Your token doesn't matched our credentials"
+            );
+          req.user = user;
+          next();
+        }
+      );
     } catch (error) {
       if (error.name === 'NotFoundError')
         return response(res, {

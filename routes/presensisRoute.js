@@ -1,18 +1,16 @@
 const { Router } = require('express');
-const mahasiswasController = require('../controllers/mahasiswasController');
-const Auth = require('../controllers/auth');
+const presensisController = require('../controllers/presensisController');
 const { authenticateToken, generateAccessToken } = require('../helper/jwt');
+const { verificateAdmin } = require('../helper/roleChecker');
 
 const router = Router();
 
-router.post('/add-mahasiswa', authenticateToken, mahasiswasController.addMahasiswa);
+router.post('/add-link-vidcon', authenticateToken, verificateAdmin, presensisController.addLinkVidcon);
+router.post('/add-link-record', authenticateToken, verificateAdmin, presensisController.addLinkRecord);
 // router.post('/add-admin', authenticateToken, adminsController.addAdmin);
-// router.get('/', usersController.getAll);
+router.get('/', authenticateToken, verificateAdmin, presensisController.getAll);
 // router.get('/:username', authenticateToken, usersController.getOne);
 // router.put('/:id', authenticateToken, usersController.update);
 // router.delete('/:id', authenticateToken, usersController.delete);
-// router.post('/register', Auth.register);
-// router.post('/login', Auth.login);
-// router.post('/logout', Auth.logout);
 
 module.exports = router;
