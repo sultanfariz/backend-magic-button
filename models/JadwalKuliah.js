@@ -14,6 +14,12 @@ const jadwalSchema = new Schema(
       type: String,
       required: true,
     },
+    pertemuan: {
+      type: Number,
+      min: 1,
+      max: 14,
+      required: true,
+    },
     matkul: {
       type: Schema.Types.ObjectId,
       ref: 'MataKuliah',

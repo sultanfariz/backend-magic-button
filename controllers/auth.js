@@ -3,7 +3,6 @@ const { isEmpty, response, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError, WrongPasswordError } = require('../errors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { authenticateToken, generateAccessToken } = require('../helper/jwt');
 
 let refreshTokens = [];
 
@@ -48,7 +47,6 @@ module.exports = {
         success: true,
         message: 'Login successfully!',
         content: {
-          user,
           token,
         },
       });

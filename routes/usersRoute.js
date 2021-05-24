@@ -9,9 +9,4 @@ router.get('/:username', authenticateToken, usersController.getOne);
 router.put('/:id', authenticateToken, usersController.update);
 router.delete('/:id', authenticateToken, usersController.delete);
 
-// //test auth token jwt
-// router.post('/', authenticateToken, async function (req, res, next) {
-//   res.status(201).json({ message: 'OK' });
-// });
-
 module.exports = router;

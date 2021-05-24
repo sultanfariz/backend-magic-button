@@ -2,9 +2,11 @@
 
 ```
 // Install dependencies for server
-npm install && npm run client-install
+npm install
 
-// Run client & server with concurrently
+// Rename .env.example to .env to configure server environments
+
+// Run server
 npm run start
 
 // Server runs on http://localhost:4000

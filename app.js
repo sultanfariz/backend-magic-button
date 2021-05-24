@@ -10,6 +10,7 @@ const usersRoutes = require('./routes/usersRoute');
 const adminsRoutes = require('./routes/adminsRoute');
 const mahasiswasRoutes = require('./routes/mahasiswasRoute');
 const linksRoutes = require('./routes/linksRoute');
+const presensisRoutes = require('./routes/presensisRoute');
 
 const app = express();
 
@@ -32,5 +33,6 @@ app.use('/users', usersRoutes);
 app.use('/admins', adminsRoutes);
 app.use('/mahasiswa', mahasiswasRoutes);
 app.use('/link', linksRoutes);
+app.use('/presensi', presensisRoutes);
 
 module.exports = app;
