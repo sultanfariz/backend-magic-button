@@ -10,7 +10,7 @@ module.exports = {
     try {
       const hashedPassword = await hashPassword(password);
 
-      const createdUser = await User.create({
+      let createdUser = await User.create({
         username,
         password: hashedPassword,
         role: 'admin',
@@ -23,6 +23,9 @@ module.exports = {
       createdUser.admin = createdAdmin._id;
       await createdUser.save();
 
+      createdUser.password = undefined;
+      createdUser = JSON.parse(JSON.stringify(createdUser));
+
       // const token = jwt.sign(
       //   { username: createdUser.username },
       //   process.env.ACCESS_JWT_SECRET
@@ -32,7 +35,7 @@ module.exports = {
       return response(res, {
         code: 201,
         success: true,
-        message: 'Register successfully!',
+        message: 'Successfully registered!',
         content: {
           user: { createdUser, createdAdmin },
           // token,

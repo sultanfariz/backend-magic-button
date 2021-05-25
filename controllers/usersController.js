@@ -1,16 +1,23 @@
-const User = require('../models/User');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
+const User = require('../models/User');
+const Admin = require('../models/Admin');
+const Mahasiswa = require('../models/Mahasiswa');
 
 module.exports = {
   getAll: async (req, res) => {
     try {
-      const users = await User.find();
+      let users = await User.find();
 
       if (isEmpty(users)) {
         throw new NotFoundError('Users Not Found!');
       }
 
+      users.forEach((user, idx) => {
+        user.password = undefined;
+        user = JSON.parse(JSON.stringify(user));
+      });
+      
       return response(res, {
         code: 200,
         success: true,
@@ -47,10 +54,13 @@ module.exports = {
     const { username } = req.params;
 
     try {
-      const user = await User.findOne({ username });
+      let user = await User.findOne({ username });
 
       if (isEmpty(user))
         throw new NotFoundError(`User with username ${username} not found!`);
+
+      user.password = undefined;
+      user = JSON.parse(JSON.stringify(user));
 
       return response(res, {
         code: 200,
@@ -128,6 +138,10 @@ module.exports = {
     const { id } = req.params;
 
     try {
+      const user = await User.findOne({ _id: id });
+      
+      if(user.role === 'admin') await Admin.deleteOne({ user: id });
+      else if(user.role === 'mahasiswa') await Mahasiswa.deleteOne({ user: id });
       await User.deleteOne({ _id: id });
 
       return response(res, {

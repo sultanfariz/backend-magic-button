@@ -6,6 +6,7 @@ const { verificateRole } = require('../helper/roleVerification');
 const router = Router();
 
 router.post('/add-link-vidcon', authenticateToken, verificateRole('admin'), linksController.addLinkVidcon);
+router.post('/add-link-record', authenticateToken, verificateRole('admin'), linksController.addLinkRecord);
 // router.post('/add-admin', authenticateToken, adminsController.addAdmin);
 router.get('/', authenticateToken, verificateRole('admin'), linksController.getAll);
 // router.get('/:username', authenticateToken, usersController.getOne);

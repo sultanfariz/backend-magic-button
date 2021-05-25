@@ -19,8 +19,6 @@ module.exports = {
         ],
       });
 
-      console.log(user);
-
       if (isEmpty(user)) throw new NotFoundError("Username doesn't exists!");
 
       const checkPassword = await bcrypt.compare(password, user.password);
@@ -72,7 +70,13 @@ module.exports = {
   },
 
   logout: async (req, res) => {
-    res.status(202).clearCookie('token').send('cookie cleared');
+    res.status(202).clearCookie('token');
+    return response(res, {
+      code: 202,
+      success: true,
+      message: 'Cookie has been cleared',
+      content: null,
+    });
   },
 
   register: async (req, res) => {
