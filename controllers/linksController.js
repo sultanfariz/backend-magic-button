@@ -6,17 +6,17 @@ const { NotFoundError } = require('../errors');
 module.exports = {
   getAll: async (req, res) => {
     try {
-      const users = await User.find();
+      const links = await Link.find();
 
-      if (isEmpty(users)) {
-        throw new NotFoundError('Users Not Found!');
+      if (isEmpty(links)) {
+        throw new NotFoundError('Links Not Found!');
       }
 
       return response(res, {
         code: 200,
         success: true,
-        message: 'Successfully get users data!',
-        content: users,
+        message: 'Successfully get links data!',
+        content: links,
       });
     } catch (error) {
       if (error.name === 'NotFoundError') {
@@ -68,7 +68,7 @@ module.exports = {
       });
     }
   },
-
+  
   addLinkVidcon: async (req, res) => {
     const { link, platform } = req.body;
 
@@ -82,7 +82,7 @@ module.exports = {
         link: createdLink._id,
         platform,
       });
-
+      // create reference between Vidcon and Link models
       createdLink.vidcon = createdVidcon._id;
       await createdLink.save();
 
@@ -116,7 +116,7 @@ module.exports = {
       const createdRecord = await Record.create({
         link: createdLink._id,
       });
-
+      // create reference between Record and Link models
       createdLink.record = createdRecord._id;
       await createdLink.save();
 

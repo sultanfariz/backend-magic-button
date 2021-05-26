@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const matkulSchema = new Schema(
+const departemenSchema = new Schema(
   {
     nama: {
       type: String,
@@ -11,15 +11,15 @@ const matkulSchema = new Schema(
       required: true,
       unique: true,
     },
-    sks:{
-      type: String,
-      required: true,
+    fakultas: {
+        type: Schema.Types.ObjectId,
+        ref: 'Fakultas',
     },
   },
   {
-    collection: 'matkul',
+    collection: 'departemen',
     timestamps: true,
   }
 );
 
-module.exports = model('MataKuliah', matkulSchema);
+module.exports = model('Departemen', departemenSchema);

@@ -11,16 +11,10 @@ module.exports = {
     const { username, password } = req.body;
 
     try {
-      const user = await User.findOne({
-        $or: [
-          {
-            username,
-          },
-        ],
-      });
+      const user = await User.findOne({username});
 
       if (isEmpty(user)) throw new NotFoundError("Username doesn't exists!");
-
+      // compare user-inputed password with database password
       const checkPassword = await bcrypt.compare(password, user.password);
       if (!checkPassword)
         throw new WrongPasswordError(
@@ -31,14 +25,16 @@ module.exports = {
       // const refreshToken = jwt.sign(user, process.env.REFRESH_JWT_SECRET);
       // refreshTokens.push(refreshToken);
 
+      // create new jwt token
       const token = jwt.sign(
         {
+          id: user._id,
           username: user.username,
           role: user.role,
         },
         process.env.ACCESS_JWT_SECRET
       );
-
+      // store the token in user browser cookie
       res.cookie('token', token, { httpOnly: true });
       return response(res, {
         code: 200,
@@ -68,7 +64,7 @@ module.exports = {
       });
     }
   },
-
+  // logout user by deleting browser cookie
   logout: async (req, res) => {
     res.status(202).clearCookie('token');
     return response(res, {

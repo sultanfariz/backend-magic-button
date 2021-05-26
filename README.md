@@ -15,3 +15,7 @@ npm run start
 
 // Server runs on http://localhost:4000
 ```
+
+## API Docs
+
+https://documenter.getpostman.com/view/14458184/TzXwEJLU

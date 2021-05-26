@@ -11,6 +11,10 @@ const mahasiswaSchema = new Schema(
       required: true,
       unique: true,
     },
+    nama: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

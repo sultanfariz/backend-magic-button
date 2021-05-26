@@ -5,6 +5,14 @@ const Admin = require('../models/Admin');
 const Mahasiswa = require('../models/Mahasiswa');
 
 module.exports = {
+  /**
+   * Get all users data.
+   *
+   * @param {Express.Request} req
+   * @param {Express.Response} res
+   *
+   * @returns {Express.Response} Return all users data from database
+   */
   getAll: async (req, res) => {
     try {
       let users = await User.find();
@@ -12,7 +20,7 @@ module.exports = {
       if (isEmpty(users)) {
         throw new NotFoundError('Users Not Found!');
       }
-
+      // prevent password to be showed in response
       users.forEach((user, idx) => {
         user.password = undefined;
         user = JSON.parse(JSON.stringify(user));
@@ -58,7 +66,7 @@ module.exports = {
 
       if (isEmpty(user))
         throw new NotFoundError(`User with username ${username} not found!`);
-
+      // prevent password to be showed in response
       user.password = undefined;
       user = JSON.parse(JSON.stringify(user));
 
@@ -94,22 +102,20 @@ module.exports = {
    */
   update: async (req, res) => {
     const { id } = req.params;
-    const { firstName, lastName, username, email, password } = req.body;
+    const { username, password } = req.body;
 
     try {
       const hashedPassword = await hashPassword(password);
 
       const updatedUser = await User.findOneAndUpdate(
         id,
-        {
-          firstName,
-          lastName,
-          username,
-          email,
-          password: hashedPassword,
-        },
+        { username, password: hashedPassword },
         { new: true }
       );
+
+      // prevent password to be showed in response
+      updatedUser.password = undefined;
+      updatedUser = JSON.parse(JSON.stringify(updatedUser));
 
       return response(res, {
         code: 200,

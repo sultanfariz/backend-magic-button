@@ -10,7 +10,12 @@ const jadwalSchema = new Schema(
       type: Date,
       required: true,
     },
-    kodeParalel: {
+    jenisKelas: {
+      type: String,
+      required: true,
+      enum: ['K', 'P'],
+    },
+    paralel: {
       type: String,
       required: true,
     },
@@ -20,17 +25,21 @@ const jadwalSchema = new Schema(
       max: 14,
       required: true,
     },
+    mahasiswa: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Mahasiswa',
+    }],
     matkul: {
       type: Schema.Types.ObjectId,
       ref: 'MataKuliah',
     },
-    dosen: {
+    vidcon: {
       type: Schema.Types.ObjectId,
-      ref: 'Dosen',
+      ref: 'Vidcon',
     },
-    link: {
+    record : {
       type: Schema.Types.ObjectId,
-      ref: 'Link',
+      ref: 'Record',
     },
   },
   {
@@ -39,4 +48,4 @@ const jadwalSchema = new Schema(
   }
 );
 
-module.exports = model('JadwalKuliah', jadwalSchema);
+module.exports = model('Jadwal', jadwalSchema);

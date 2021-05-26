@@ -6,9 +6,11 @@ const { response } = require('./bcrypt');
 const { parseJwtPayload } = require('./jwt');
 
 module.exports = {
-  verificateRole: (role) => {
+  // middleware to verify user by its role
+  verifyRole: (role) => {
     return async (req, res, next) => {
       try {
+        // use locals variable from previous middleware
         const username = parseJwtPayload(res.locals.token).username;
         const tokenrole = parseJwtPayload(res.locals.token).role;
         const user = await User.findOne({ username });
