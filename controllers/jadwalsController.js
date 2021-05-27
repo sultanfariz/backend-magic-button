@@ -36,38 +36,38 @@ module.exports = {
     }
   },
 
-  // getOne: async (req, res) => {
-  //   const { username } = req.params;
+  getOne: async (req, res) => {
+    const { username } = req.params;
 
-  //   try {
-  //     const user = await User.findOne({ username });
+    try {
+      const user = await User.findOne({ username });
 
-  //     if (isEmpty(user))
-  //       throw new NotFoundError(`User with username ${username} not found!`);
+      if (isEmpty(user))
+        throw new NotFoundError(`User with username ${username} not found!`);
 
-  //     return response(res, {
-  //       code: 200,
-  //       success: true,
-  //       message: `Successfully get ${username} data!`,
-  //       content: user,
-  //     });
-  //   } catch (error) {
-  //     if (error.name === 'NotFoundError') {
-  //       return response(res, {
-  //         code: 404,
-  //         success: false,
-  //         message: error.message,
-  //       });
-  //     }
+      return response(res, {
+        code: 200,
+        success: true,
+        message: `Successfully get ${username} data!`,
+        content: user,
+      });
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
 
-  //     return response(res, {
-  //       code: 500,
-  //       success: false,
-  //       message: error.message || 'Something went wrong!',
-  //       content: error,
-  //     });
-  //   }
-  // },
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
 
   filter: async (req, res) => {
     const { type, matkul, idjadwal } = req.query;
@@ -140,40 +140,6 @@ module.exports = {
         message: 'Link inserted successfully!',
         content: {
           link: { createdLink, createdVidcon },
-        },
-      });
-    } catch (error) {
-      return response(res, {
-        code: 500,
-        success: false,
-        message: error.message || 'Something went wrong!',
-        content: error,
-      });
-    }
-  },
-  
-  addLinkRecord: async (req, res) => {
-    const { link } = req.body;
-
-    try {
-      const createdLink = await Link.create({
-        link,
-        type: 'record',
-      });
-
-      const createdRecord = await Record.create({
-        link: createdLink._id,
-      });
-      // create reference between Record and Link models
-      createdLink.record = createdRecord._id;
-      await createdLink.save();
-
-      return response(res, {
-        code: 201,
-        success: true,
-        message: 'Link inserted successfully!',
-        content: {
-          link: { createdLink, createdRecord },
         },
       });
     } catch (error) {

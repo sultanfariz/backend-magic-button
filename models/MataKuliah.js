@@ -15,6 +15,14 @@ const matkulSchema = new Schema(
       type: String,
       required: true,
     },
+    departemen: {
+      type: Schema.Types.ObjectId,
+      ref: 'Departemen',
+    },
+    vidcon: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Vidcon',
+    }],
   },
   {
     collection: 'matkul',

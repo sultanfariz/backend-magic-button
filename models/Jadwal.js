@@ -37,10 +37,6 @@ const jadwalSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Vidcon',
     },
-    record : {
-      type: Schema.Types.ObjectId,
-      ref: 'Record',
-    },
   },
   {
     collection: 'jadwal',

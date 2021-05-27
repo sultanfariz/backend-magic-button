@@ -2,15 +2,82 @@ const User = require('../models/User');
 const Mahasiswa = require('../models/Mahasiswa');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
+const MataKuliah = require('../models/MataKuliah');
 
 module.exports = {
-  addMahasiswa: async (req, res) => {
+  getAll: async (req, res) => {
+    try {
+      let mahasiswa = await Mahasiswa.find();
+
+      if (isEmpty(mahasiswa)) {
+        throw new NotFoundError('Mahasiswa Not Found!');
+      }
+
+      return response(res, {
+        code: 200,
+        success: true,
+        message: 'Successfully get mahasiswa data!',
+        content: mahasiswa,
+      });
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
+
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
+
+  getOne: async (req, res) => {
+    const { username } = req.params;
+
+    try {
+      const user = await User.findOne({ username });
+      const mahasiswa = await Mahasiswa.find({ user: user._id });
+
+      if (isEmpty(user || mahasiswa))
+        throw new NotFoundError(`Mahasiswa with username ${username} not found!`);
+        
+      return response(res, {
+        code: 200,
+        success: true,
+        message: `Successfully get ${username} data!`,
+        content: mahasiswa,
+      });
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
+
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
+
+  insert: async (req, res) => {
     const { username, password, nama, nim } = req.body;
 
     try {
       const hashedPassword = await hashPassword(password);
 
-      const createdUser = await User.create({
+      let createdUser = await User.create({
         username,
         password: hashedPassword,
         role: 'mahasiswa',
@@ -36,6 +103,59 @@ module.exports = {
         content: {
           user: { createdUser, createdMahasiswa },
         },
+      });
+    } catch (error) {
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
+
+  enrollMatkul: async (req, res) => {
+    const { idmahasiswa, idmatkul } = req.body;
+
+    try {
+      let mahasiswa = await Mahasiswa.findOne({ _id: idmahasiswa });
+      const matkul = await MataKuliah.findOne({ _id: idmatkul });
+      
+      console.log(mahasiswa)
+      console.log(matkul)
+      console.log(mahasiswa.matkul)
+      
+      if (isEmpty(mahasiswa))
+        throw new NotFoundError(`Mahasiswa not found!`);
+
+      mahasiswa.matkul.push(matkul);
+      console.log(mahasiswa.matkul);
+      await mahasiswa.save();
+      
+      // const createdUser = await User.create({
+      //   username,
+      //   password: hashedPassword,
+      //   role: 'mahasiswa',
+      // });
+
+      // const createdMahasiswa = await Mahasiswa.create({
+      //   user: createdUser._id,
+      //   nama,
+      //   nim,
+      // });
+      // // create reference between Mahasiswa and User models
+      // createdUser.mahasiswa = createdMahasiswa._id;
+      // await createdUser.save();
+
+      // // prevent password to be showed in response
+      // createdUser.password = undefined;
+      // createdUser = JSON.parse(JSON.stringify(createdUser));
+
+      return response(res, {
+        code: 201,
+        success: true,
+        message: 'Successfully enrolled!',
+        content: null,
       });
     } catch (error) {
       return response(res, {
