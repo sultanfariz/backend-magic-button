@@ -153,9 +153,12 @@ module.exports = {
   },
   
   addLinkRecord: async (req, res) => {
-    const { link } = req.body;
+    const { link, idjadwal, pertemuan, tanggal } = req.body;
 
     try {
+      let date = new Date(tanggal) ;
+      console.log(date);
+
       const createdLink = await Link.create({
         link,
         type: 'record',
@@ -163,10 +166,16 @@ module.exports = {
 
       const createdRecord = await Record.create({
         link: createdLink._id,
+        tanggal: date,
+        pertemuan
       });
       // create reference between Record and Link models
       createdLink.record = createdRecord._id;
       await createdLink.save();
+
+      // create reference between Record and Jadwal models
+      createdRecord.jadwal = idjadwal;
+      await createdRecord.save();
 
       return response(res, {
         code: 201,

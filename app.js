@@ -12,6 +12,7 @@ const mahasiswasRoutes = require('./routes/mahasiswasRoute');
 const linksRoutes = require('./routes/linksRoute');
 const presensisRoutes = require('./routes/presensisRoute');
 const mataKuliahRoutes = require('./routes/mataKuliahRoute');
+const jadwalRoutes = require('./routes/jadwalRoute');
 
 const app = express();
 
@@ -36,5 +37,6 @@ app.use('/mahasiswa', mahasiswasRoutes);
 app.use('/link', linksRoutes);
 app.use('/presensi', presensisRoutes);
 app.use('/matkul', mataKuliahRoutes);
+app.use('/jadwal', jadwalRoutes);
 
 module.exports = app;

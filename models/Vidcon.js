@@ -11,6 +11,10 @@ const vidconSchema = new Schema(
       required: true,
       enum: ['Zoom', 'Cisco Webex', 'Microsoft Teams', 'Google Meet'],
     },
+    jadwal: {
+      type: Schema.Types.ObjectId,
+      ref: 'Jadwal',
+    },
   },
   {
     timestamps: true,

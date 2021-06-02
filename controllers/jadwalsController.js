@@ -1,22 +1,22 @@
-const Link = require('../models/Link');
-const Vidcon = require('../models/Vidcon');
+const Jadwal = require('../models/Jadwal');
+const MataKuliah = require('../models/MataKuliah');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
 
 module.exports = {
   getAll: async (req, res) => {
     try {
-      const links = await Link.find();
+      const jadwal = await Jadwal.find();
 
-      if (isEmpty(links)) {
-        throw new NotFoundError('Links Not Found!');
+      if (isEmpty(jadwal)) {
+        throw new NotFoundError('Jadwal Not Found!');
       }
 
       return response(res, {
         code: 200,
         success: true,
-        message: 'Successfully get links data!',
-        content: links,
+        message: 'Successfully get jadwal data!',
+        content: jadwal,
       });
     } catch (error) {
       if (error.name === 'NotFoundError') {
@@ -117,29 +117,33 @@ module.exports = {
     }
   },
   
-  addLinkVidcon: async (req, res) => {
-    const { link, platform } = req.body;
+  insert: async (req, res) => {
+    const { starthour, endhour, jeniskelas, paralel, idmatkul } = req.body;
 
     try {
-      const createdLink = await Link.create({
-        link,
-        type: 'vidcon',
+      const createdJadwal = await Jadwal.create({
+        startHour: starthour, 
+        endHour: endhour, 
+        jenisKelas: jeniskelas, 
+        paralel,
       });
 
-      const createdVidcon = await Vidcon.create({
-        link: createdLink._id,
-        platform,
-      });
-      // create reference between Vidcon and Link models
-      createdLink.vidcon = createdVidcon._id;
-      await createdLink.save();
+      // create reference between Jadwal and Matkul models
+      createdJadwal.matkul = idmatkul;
+      await createdJadwal.save();
+
+      let matkul = await MataKuliah.findOne({ _id: idmatkul });
+      if (isEmpty(matkul))
+        throw new NotFoundError(`Mata Kuliah with id ${idmatkul} not found!`);
+      matkul.jadwal.push(createdJadwal);
+      await matkul.save();
 
       return response(res, {
         code: 201,
         success: true,
-        message: 'Link inserted successfully!',
+        message: 'Jadwal inserted successfully!',
         content: {
-          link: { createdLink, createdVidcon },
+          createdJadwal
         },
       });
     } catch (error) {

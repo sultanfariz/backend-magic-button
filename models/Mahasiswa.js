@@ -17,9 +17,11 @@ const mahasiswaSchema = new Schema(
     },
     matkul: [{
       id: {
-            type: Schema.Types.ObjectId,
-            ref: 'MataKuliah',
-          }
+        type: Schema.Types.ObjectId,
+        ref: 'MataKuliah',
+        uniqueItems: true,
+        unique: true,
+      }
     }],
   },
   {
