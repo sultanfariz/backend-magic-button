@@ -24,7 +24,7 @@ const matkulSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: 'Jadwal',
         uniqueItems: true,
-        unique: true,
+        // unique: true,
       }
     }],
   },

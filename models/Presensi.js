@@ -4,15 +4,26 @@ const presensiSchema = new Schema(
   {
     waktuPresensi: {
       type: Date,
+      required: true,
+      default: Date.now,
+    },
+    pertemuan: {
+      type: Number,
+      min: 1, max: 14,
+      required: true,
     },
     isChecked: {
       type: Boolean,
       required: true,
       default: false,
     },
-    jadwalKuliah: {
+    jadwal: {
       type: Schema.Types.ObjectId,
-      ref: 'JadwalKuliah',
+      ref: 'Jadwal',
+    },
+    mahasiswa: {
+      type: Schema.Types.ObjectId,
+      ref: 'Mahasiswa',
     },
   },
   {

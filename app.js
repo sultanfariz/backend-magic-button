@@ -30,13 +30,13 @@ app.use(
   })
 );
 
-app.use('/', authRoutes);
-app.use('/users', usersRoutes);
-app.use('/admins', adminsRoutes);
-app.use('/mahasiswa', mahasiswasRoutes);
-app.use('/link', linksRoutes);
-app.use('/presensi', presensisRoutes);
-app.use('/matkul', mataKuliahRoutes);
-app.use('/jadwal', jadwalRoutes);
+app.use('/api/v1/', authRoutes);
+app.use('/api/v1/users', usersRoutes);
+app.use('/api/v1/admins', adminsRoutes);
+app.use('/api/v1/mahasiswa', mahasiswasRoutes);
+app.use('/api/v1/link', linksRoutes);
+app.use('/api/v1/presensi', presensisRoutes);
+app.use('/api/v1/matkul', mataKuliahRoutes);
+app.use('/api/v1/jadwal', jadwalRoutes);
 
 module.exports = app;

@@ -13,7 +13,21 @@ module.exports = {
     try {
       const user = await User.findOne({username});
 
-      if (isEmpty(user)) throw new NotFoundError("Username doesn't exists!");
+      if (isEmpty(user)){
+        // throw new NotFoundError("Username doesn't exists!");
+        const apiBody = {userName: username, password: password }
+        const response = await fetch("http://api.ipb.ac.id/v1/Authentication/LoginMahasiswa", {
+          method: 'POST', 
+          headers: {
+            'Content-Type': 'application/json',
+            'X-IPBAPI-Token': 'Bearer 6454b1ff-7dce-396d-9b07-4f88248072b6'
+          },
+          body: JSON.stringify(apiBody)
+        })
+        if (response.status === 200){
+          let data = await response.json();
+        }
+      }
       // compare user-inputed password with database password
       const checkPassword = await bcrypt.compare(password, user.password);
       if (!checkPassword)

@@ -2,6 +2,7 @@ const Jadwal = require('../models/Jadwal');
 const MataKuliah = require('../models/MataKuliah');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
+const Mahasiswa = require('../models/Mahasiswa');
 
 module.exports = {
   getAll: async (req, res) => {
@@ -37,19 +38,19 @@ module.exports = {
   },
 
   getOne: async (req, res) => {
-    const { username } = req.params;
+    const { id } = req.params;
 
     try {
-      const user = await User.findOne({ username });
+      const jadwal = await Jadwal.findOne({ id });
 
-      if (isEmpty(user))
-        throw new NotFoundError(`User with username ${username} not found!`);
+      if (isEmpty(jadwal))
+        throw new NotFoundError(`Jadwal with id ${id} not found!`);
 
       return response(res, {
         code: 200,
         success: true,
-        message: `Successfully get ${username} data!`,
-        content: user,
+        message: `Successfully get jadwal data!`,
+        content: jadwal,
       });
     } catch (error) {
       if (error.name === 'NotFoundError') {
@@ -156,30 +157,56 @@ module.exports = {
     }
   },
 
-  update: async (req, res) => {
+  insertPertemuan: async (req, res) => {
     const { id } = req.params;
-    const { firstName, lastName, username, email, password } = req.body;
+    const { tanggal } = req.body;
 
     try {
-      const hashedPassword = await hashPassword(password);
-
-      const updatedUser = await User.findOneAndUpdate(
-        id,
-        {
-          firstName,
-          lastName,
-          username,
-          email,
-          password: hashedPassword,
-        },
-        { new: true }
-      );
-
+      let jadwal = await Jadwal.findOne({ _id: id });
+      if (isEmpty(jadwal))
+        throw new NotFoundError(`Jadwal not found!`);
+      const date = new Date(tanggal);
+      jadwal.date.push(date);
+      await jadwal.save();
+      
       return response(res, {
         code: 200,
         success: true,
-        message: 'Successfully update user',
-        content: updatedUser,
+        message: 'Pertemuan inserted successfully',
+        content: jadwal,
+      });
+    } catch (error) {
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
+
+  insertMahasiswa: async (req, res) => {
+    const { id } = req.params;
+    const { mahasiswa } = req.body;
+
+    try {
+      let jadwal = await Jadwal.findOne({ _id: id });
+      let mhs = await Mahasiswa.findOne({ _id: mahasiswa });
+      console.log("error");
+      if (isEmpty(jadwal))
+        throw new NotFoundError(`Jadwal not found!`);
+      if (isEmpty(mhs))
+        throw new NotFoundError(`Mahasiswa not found!`);
+      jadwal.mahasiswa.push(mahasiswa);
+      console.log("error");
+      await jadwal.save();
+      console.log("error");
+      
+      return response(res, {
+        code: 200,
+        success: true,
+        message: 'Mahasiswa inserted successfully',
+        content: jadwal,
       });
     } catch (error) {
       return response(res, {
@@ -195,12 +222,12 @@ module.exports = {
     const { id } = req.params;
 
     try {
-      await User.deleteOne({ _id: id });
+      await Jadwal.deleteOne({ _id: id });
 
       return response(res, {
         code: 200,
         success: true,
-        message: 'Successfully delete user!',
+        message: 'Successfully delete jadwal!',
       });
     } catch (error) {
       return response(res, {

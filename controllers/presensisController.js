@@ -1,22 +1,25 @@
 const Link = require('../models/Link');
-const Vidcon = require('../models/Vidcon');
+const Presensi = require('../models/Presensi');
+const User = require('../models/User');
+const Jadwal = require('../models/Jadwal');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
+const { parseJwtPayload } = require('../helper/jwt');
 
 module.exports = {
   getAll: async (req, res) => {
     try {
-      const users = await User.find();
+      const presensi = await Presensi.find();
 
-      if (isEmpty(users)) {
-        throw new NotFoundError('Users Not Found!');
+      if (isEmpty(presensi)) {
+        throw new NotFoundError('Presensi Not Found!');
       }
 
       return response(res, {
         code: 200,
         success: true,
-        message: 'Successfully get users data!',
-        content: users,
+        message: 'Successfully get presensi data!',
+        content: presensi,
       });
     } catch (error) {
       if (error.name === 'NotFoundError') {
@@ -37,19 +40,19 @@ module.exports = {
   },
 
   getOne: async (req, res) => {
-    const { username } = req.params;
+    const { id } = req.params;
 
     try {
-      const user = await User.findOne({ username });
+      const presensi = await Presensi.findOne({ _id: id });
 
-      if (isEmpty(user))
-        throw new NotFoundError(`User with username ${username} not found!`);
+      if (isEmpty(presensi))
+        throw new NotFoundError(`Presensi with id ${id} not found!`);
 
       return response(res, {
         code: 200,
         success: true,
-        message: `Successfully get ${username} data!`,
-        content: user,
+        message: `Successfully get ${id} data!`,
+        content: presensi,
       });
     } catch (error) {
       if (error.name === 'NotFoundError') {
@@ -69,29 +72,81 @@ module.exports = {
     }
   },
 
-  checkPresensi: async (req, res) => {
-    const { link, platform } = req.body;
-
+  filter: async (req, res) => {
+    const { matkul } = req.query;
+    const username = parseJwtPayload(res.locals.token).username;
+    const user = await User.findOne({ username });
+    const userId = user._id;
+    // const jadwal = await Jadwal.findOne({ matkul });
+    // const jadwalId = jadwal._id;
+    
     try {
-      const createdLink = await Link.create({
-        link,
-        type: 'record',
+        const presensi = await Presensi.find({ 
+          $and: [
+            {
+              mahasiswa: userId
+            },
+            {
+              jadwal: jadwalId
+            }
+          ] 
+        });
+      
+      if (isEmpty(presensi))
+        throw new NotFoundError(`Presensi not found!`);
+        
+        return response(res, {
+          code: 200,
+        success: true,
+        message: `Successfully get presensi data!`,
+        content: presensi,
       });
-
-      const createdRecord = await Record.create({
-        link: createdLink._id,
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
+      
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
       });
+    }
+  },
+  
+  checkPresensi: async (req, res) => {
+    const { pertemuan, jadwal } = req.body;
+    
+    try {
+      const username = parseJwtPayload(res.locals.token).username;
+      const user = await User.findOne({ username });
+      const userId = user._id;
 
-      createdLink.record = createdRecord._id;
-      await createdLink.save();
+      const presensi = await Presensi.findOne({  
+        $and: [{ pertemuan }, { jadwal }] 
+      });
+      if(presensi) throw new NotFoundError('Presensi already filled!')
 
+      const createdPresensi = await Presensi.create({
+        waktuPresensi: Date.now(),
+        pertemuan,
+        isChecked: true,
+      });
+      
+      createdPresensi.jadwal = jadwal;
+      createdPresensi.mahasiswa = userId;
+      await createdPresensi.save();
+      
       return response(res, {
         code: 201,
         success: true,
-        message: 'Link inserted successfully!',
-        content: {
-          link: { createdLink, createdRecord },
-        },
+        message: 'Presensi checked',
+        content: createdPresensi,
       });
     } catch (error) {
       return response(res, {

@@ -4,7 +4,7 @@ const { authenticateToken, generateAccessToken } = require('../helper/jwt');
 
 const router = Router();
 
-router.post('/register', Auth.register);
+// router.post('/register', Auth.register);
 router.post('/login', Auth.login);
 router.post('/logout', Auth.logout);
 

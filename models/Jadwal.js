@@ -2,6 +2,10 @@ const { Schema, model } = require('mongoose');
 
 const jadwalSchema = new Schema(
   {
+    date: [{
+      type: Date,
+      required: true,
+    }],
     startHour: {
       type: String,
       required: true,
@@ -23,6 +27,12 @@ const jadwalSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'MataKuliah',
     },
+    mahasiswa: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Mahasiswa',
+      uniqueItems: true,
+      // unique: true,
+    }],
   },
   {
     collection: 'jadwal',
