@@ -2,6 +2,7 @@ const User = require('../models/User');
 const { isEmpty, response, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError, WrongPasswordError } = require('../errors');
 const bcrypt = require('bcrypt');
+const fetch = require('node-fetch');
 const jwt = require('jsonwebtoken');
 
 let refreshTokens = [];
@@ -12,11 +13,11 @@ module.exports = {
 
     try {
       const user = await User.findOne({username});
-
+      //login mahasiswa ipb 
       if (isEmpty(user)){
         // throw new NotFoundError("Username doesn't exists!");
-        const apiBody = {userName: username, password: password }
-        const response = await fetch("http://api.ipb.ac.id/v1/Authentication/LoginMahasiswa", {
+        const apiBody = {Username: username, Password: password }
+        const apiResponse = await fetch("http://api.ipb.ac.id/v1/Authentication/LoginMahasiswa", {
           method: 'POST', 
           headers: {
             'Content-Type': 'application/json',
@@ -24,15 +25,25 @@ module.exports = {
           },
           body: JSON.stringify(apiBody)
         })
-        if (response.status === 200){
-          let data = await response.json();
+        if (apiResponse.status === 200){
+          const data = await apiResponse.json();
+          // store the token in user browser cookie
+          res.cookie('token', data["Token"], { httpOnly: true });
+          return response(res, {
+            code: 200,
+            success: true,
+            message: 'Login successfully!',
+            content: {
+              data
+            },
+          });
         }
       }
       // compare user-inputed password with database password
       const checkPassword = await bcrypt.compare(password, user.password);
       if (!checkPassword)
         throw new WrongPasswordError(
-          'Your password not match with our records!'
+          'Your password doesn\'t match with our records!'
         );
 
       // const accessToken = generateAccessToken(user);
