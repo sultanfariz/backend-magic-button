@@ -1,3 +1,4 @@
+require('dotenv').config();
 const User = require('../models/User');
 const { isEmpty, response, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError, WrongPasswordError } = require('../errors');
@@ -21,7 +22,7 @@ module.exports = {
           method: 'POST', 
           headers: {
             'Content-Type': 'application/json',
-            'X-IPBAPI-Token': 'Bearer 6454b1ff-7dce-396d-9b07-4f88248072b6'
+            'X-IPBAPI-Token': process.env.ACCESS_TOKEN
           },
           body: JSON.stringify(apiBody)
         })

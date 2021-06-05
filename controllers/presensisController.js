@@ -132,22 +132,22 @@ module.exports = {
       });
       if(presensi) throw new NotFoundError('Presensi already filled!')
 
-      const createdPresensi = await Presensi.create({
-        waktuPresensi: Date.now(),
-        pertemuan,
-        isChecked: true,
-      });
+      // const createdPresensi = await Presensi.create({
+      //   waktuPresensi: Date.now(),
+      //   pertemuan,
+      //   isChecked: true,
+      // });
       
-      createdPresensi.jadwal = jadwal;
-      createdPresensi.mahasiswa = userId;
-      await createdPresensi.save();
+      // createdPresensi.jadwal = jadwal;
+      // createdPresensi.mahasiswa = userId;
+      // await createdPresensi.save();
       
-      return response(res, {
-        code: 201,
-        success: true,
-        message: 'Presensi checked',
-        content: createdPresensi,
-      });
+      // return response(res, {
+      //   code: 201,
+      //   success: true,
+      //   message: 'Presensi checked',
+      //   content: createdPresensi,
+      // });
     } catch (error) {
       return response(res, {
         code: 500,
