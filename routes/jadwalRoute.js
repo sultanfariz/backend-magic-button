@@ -6,7 +6,8 @@ const { verifyRole } = require('../helper/roleVerification');
 const router = Router();
 
 // router.get('/', authenticateTokenIPB, verifyRole("Admin"), jadwalController.getAll);
-router.get('/', authenticateToken, verifyRole("Admin"), jadwalController.getAll);
+router.get('/', authenticateTokenIPB, jadwalController.getAll);
+// router.get('/', authenticateToken, verifyRole("Admin"), jadwalController.getAll);
 // router.get('', authenticateToken, jadwalController.get);
 // router.get('/:id', authenticateToken, jadwalController.getOne);
 // router.post('/insert', authenticateToken, verifyRole('admin'), jadwalController.insert);

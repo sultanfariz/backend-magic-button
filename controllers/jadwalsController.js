@@ -1,46 +1,30 @@
 const { response, isEmpty } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
+const fetch = require('node-fetch');
 
 module.exports = {
   getAll: async (req, res) => {
-    const { tanggal } = req.query;
-    console.log(tanggal)
-
     try {
       const apiResponse = await fetch("http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya", {
         method: 'GET', 
         headers: {
           'Content-Type': 'application/json',
           'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
-          'Authorization': res.locals.token,
+          'Authorization': `Bearer ${res.locals.token}`,
         },
-      })
-      console.log(tanggal)
-      console.log(apiResponse);
-      if (apiResponse.status === 200){
-        const data = await apiResponse.json();
-        console.log(data)
-        // store the token in user browser cookie
-        return response(res, {
-          code: 200,
-          success: true,
-          message: 'Login successfully!',
-          content: {
-            data
-          },
-        });
+      });
+      if (apiResponse.status !== 200){
+        throw new NotFoundError('Jadwal Not Found!');
       }
-
-      // if (isEmpty(jadwal)) {
-      //   throw new NotFoundError('Jadwal Not Found!');
-      // }
-
-      // return response(res, {
-      //   code: 200,
-      //   success: true,
-      //   message: 'Successfully get jadwal data!',
-      //   content: jadwal,
-      // });
+      const data = await apiResponse.json();
+      return response(res, {
+        code: 200, 
+        success: true,
+        message: 'Get jadwal kuliah data successfully!',
+        content: {
+          data
+        },
+      });
     } catch (error) {
       if (error.name === 'NotFoundError') {
         return response(res, {
@@ -91,38 +75,38 @@ module.exports = {
   //   }
   // },
 
-  // getOne: async (req, res) => {
-  //   const { id } = req.params;
+  getByDate: async (req, res) => {
+    const { id } = req.params;
 
-  //   try {
-  //     const jadwal = await Jadwal.findOne({ id });
+    try {
+      const jadwal = await Jadwal.findOne({ id });
 
-  //     if (isEmpty(jadwal))
-  //       throw new NotFoundError(`Jadwal with id ${id} not found!`);
+      if (isEmpty(jadwal))
+        throw new NotFoundError(`Jadwal with id ${id} not found!`);
 
-  //     return response(res, {
-  //       code: 200,
-  //       success: true,
-  //       message: `Successfully get jadwal data!`,
-  //       content: jadwal,
-  //     });
-  //   } catch (error) {
-  //     if (error.name === 'NotFoundError') {
-  //       return response(res, {
-  //         code: 404,
-  //         success: false,
-  //         message: error.message,
-  //       });
-  //     }
+      return response(res, {
+        code: 200,
+        success: true,
+        message: `Successfully get jadwal data!`,
+        content: jadwal,
+      });
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
 
-  //     return response(res, {
-  //       code: 500,
-  //       success: false,
-  //       message: error.message || 'Something went wrong!',
-  //       content: error,
-  //     });
-  //   }
-  // },
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
 
   // filter: async (req, res) => {
   //   const { type, matkul, idjadwal } = req.query;

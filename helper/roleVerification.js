@@ -9,9 +9,7 @@ module.exports = {
   // middleware to verify user by its role
   verifyRole: (role) => {
     return async (req, res, next) => {
-      console.log(role)
       try {
-        console.log(role)
         // use locals variable from previous middleware
         const username = parseJwtPayload(res.locals.token).username;
         const tokenrole = parseJwtPayload(res.locals.token).role;
