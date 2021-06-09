@@ -4,18 +4,40 @@ const fetch = require('node-fetch');
 
 module.exports = {
   getAll: async (req, res) => {
+    const { tanggal } = req.query;
+    let apiResponse;
+    let url;
+
     try {
-      const apiResponse = await fetch("http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya", {
-        method: 'GET', 
-        headers: {
-          'Content-Type': 'application/json',
-          'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
-          'Authorization': `Bearer ${res.locals.token}`,
-        },
-      });
+      if(tanggal){
+        url = "http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalSaya?Tanggal=" + tanggal;
+        apiResponse = await fetch(url, {
+          method: 'GET', 
+          headers: {
+            // 'Content-Type': 'application/json',
+            'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
+            'Authorization': `Bearer ${res.locals.token}`,
+          },
+        });
+      }else{
+        url = "http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya";
+        apiResponse = await fetch(url, {
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+            'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
+            'Authorization': `Bearer ${res.locals.token}`,
+          },
+        });
+      }
+      console.log(apiResponse.status);
+      console.log(apiResponse);
+      // console.log(await apiResponse.json());
+
       if (apiResponse.status !== 200){
         throw new NotFoundError('Jadwal Not Found!');
       }
+
       const data = await apiResponse.json();
       return response(res, {
         code: 200, 
@@ -28,9 +50,9 @@ module.exports = {
     } catch (error) {
       if (error.name === 'NotFoundError') {
         return response(res, {
-          code: 404,
+          code: apiResponse.status,
           success: false,
-          message: error.message,
+          message: apiResponse.statusText,
         });
       }
 
@@ -75,38 +97,49 @@ module.exports = {
   //   }
   // },
 
-  getByDate: async (req, res) => {
-    const { id } = req.params;
+  // getByDate: async (req, res) => {
+  //   const { tanggal } = req.query;
 
-    try {
-      const jadwal = await Jadwal.findOne({ id });
+  //   try {
+  //     const apiResponse = await fetch(`http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalSaya?Tanggal=${tanggal}`, {
+  //       method: 'GET', 
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
+  //         'Authorization': `Bearer ${res.locals.token}`,
+  //       },
+  //     });
+  //     if (apiResponse.status !== 200){
+  //       throw new NotFoundError('Jadwal Not Found!');
+  //     }
+  //     const jadwal = await Jadwal.findOne({ id });
 
-      if (isEmpty(jadwal))
-        throw new NotFoundError(`Jadwal with id ${id} not found!`);
+  //     // if (isEmpty(jadwal))
+  //     //   throw new NotFoundError(`Jadwal with id ${id} not found!`);
 
-      return response(res, {
-        code: 200,
-        success: true,
-        message: `Successfully get jadwal data!`,
-        content: jadwal,
-      });
-    } catch (error) {
-      if (error.name === 'NotFoundError') {
-        return response(res, {
-          code: 404,
-          success: false,
-          message: error.message,
-        });
-      }
+  //     return response(res, {
+  //       code: 200,
+  //       success: true,
+  //       message: `Successfully get jadwal data!`,
+  //       content: jadwal,
+  //     });
+  //   } catch (error) {
+  //     if (error.name === 'NotFoundError') {
+  //       return response(res, {
+  //         code: 404,
+  //         success: false,
+  //         message: error.message,
+  //       });
+  //     }
 
-      return response(res, {
-        code: 500,
-        success: false,
-        message: error.message || 'Something went wrong!',
-        content: error,
-      });
-    }
-  },
+  //     return response(res, {
+  //       code: 500,
+  //       success: false,
+  //       message: error.message || 'Something went wrong!',
+  //       content: error,
+  //     });
+  //   }
+  // },
 
   // filter: async (req, res) => {
   //   const { type, matkul, idjadwal } = req.query;
