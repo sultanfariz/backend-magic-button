@@ -1,25 +1,35 @@
 const { response, isEmpty } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
 const fetch = require('node-fetch');
+const Jadwal = require('../models/Jadwal');
+const { create } = require('../models/Jadwal');
 
 module.exports = {
   getAll: async (req, res) => {
     const { tanggal } = req.query;
     let apiResponse;
     let url;
-
+    let data;
+    
     try {
       if(tanggal){
+        // get jadwal by tanggal apabila request mengandung query jadwal tanggal
         url = "http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalSaya?Tanggal=" + tanggal;
         apiResponse = await fetch(url, {
           method: 'GET', 
           headers: {
-            // 'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
             'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
             'Authorization': `Bearer ${res.locals.token}`,
           },
         });
+        // cek status code (success/tidak)
+        if (apiResponse.status !== 200){
+          throw new NotFoundError('Jadwal Not Found!');
+        }
+        data = await apiResponse.json();
       }else{
+        // get jadwal keseluruhan apabila request tidak mengandung query tanggal
         url = "http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya";
         apiResponse = await fetch(url, {
           method: 'GET', 
@@ -29,16 +39,33 @@ module.exports = {
             'Authorization': `Bearer ${res.locals.token}`,
           },
         });
-      }
-      console.log(apiResponse.status);
-      console.log(apiResponse);
-      // console.log(await apiResponse.json());
+        
+        // cek status code (success/tidak)
+        if (apiResponse.status !== 200){
+          throw new NotFoundError('Jadwal Not Found!');
+        }
 
-      if (apiResponse.status !== 200){
-        throw new NotFoundError('Jadwal Not Found!');
+        data = await apiResponse.json();
+        // input data jadwal ke database
+        data.forEach(async (el) => {
+          el["ListJadwal"].forEach(async (element) => {
+            // cek apakah data jadwal sudah ada dalam database
+            const jadwal = Jadwal.findOne({ idJadwal: element["JadwalId"] });
+            if(isEmpty(jadwal)){
+              let createdJadwal = await Jadwal.create({
+                idJadwal: element["JadwalId"], 
+                day: el["Hari"], 
+                startHour: element["JamMulai"], 
+                endHour: element["JamSelesai"], 
+                jenisKelas: element["TipeKelas"], 
+                paralel: element["KelasParalel"],
+                namaMatkul: element["NamaMK"],
+                kodeMatkul: element["KodeMK"],
+              });
+            }
+          });
+        });
       }
-
-      const data = await apiResponse.json();
       return response(res, {
         code: 200, 
         success: true,

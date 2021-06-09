@@ -2,10 +2,15 @@ const { Schema, model } = require('mongoose');
 
 const jadwalSchema = new Schema(
   {
-    date: [{
-      type: Date,
+    idJadwal: {
+      type: String,
       required: true,
-    }],
+      unique: true,
+    },
+    day: {
+      type: String,
+      required: true,
+    },
     startHour: {
       type: String,
       required: true,
@@ -17,22 +22,20 @@ const jadwalSchema = new Schema(
     jenisKelas: {
       type: String,
       required: true,
-      enum: ['K', 'P'],
+      enum: ['K', 'P', 'R'],
     },
     paralel: {
       type: String,
       required: true,
     },
-    matkul: {
-      type: Schema.Types.ObjectId,
-      ref: 'MataKuliah',
+    namaMatkul: {
+      type: String,
+      required: true,
     },
-    mahasiswa: [{
-      type: Schema.Types.ObjectId,
-      ref: 'Mahasiswa',
-      uniqueItems: true,
-      // unique: true,
-    }],
+    kodeMatkul: {
+      type: String,
+      required: true,
+    },
   },
   {
     collection: 'jadwal',
