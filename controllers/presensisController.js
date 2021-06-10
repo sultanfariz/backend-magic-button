@@ -123,31 +123,34 @@ module.exports = {
     const { pertemuan, jadwal } = req.body;
     
     try {
-      const username = parseJwtPayload(res.locals.token).username;
-      const user = await User.findOne({ username });
-      const userId = user._id;
-
+      const usernameMahasiswa = parseJwtPayload(res.locals.token)["ipbUid"];
+      const idMahasiswa = parseJwtPayload(res.locals.token)["ipbMahasiswaID"];
+      
+      const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
+      
       const presensi = await Presensi.findOne({  
-        $and: [{ pertemuan }, { jadwal }] 
+        $and: [{ pertemuan }, { jadwal: dataJadwal }] 
       });
+
       if(presensi) throw new NotFoundError('Presensi already filled!')
 
-      // const createdPresensi = await Presensi.create({
-      //   waktuPresensi: Date.now(),
-      //   pertemuan,
-      //   isChecked: true,
-      // });
+      const createdPresensi = await Presensi.create({
+        waktuPresensi: Date.now(),
+        pertemuan,
+        isChecked: true,
+        idMahasiswa,
+        usernameMahasiswa
+      });
+      // create reference between Jadwal and Presensi
+      createdPresensi.jadwal = dataJadwal;
+      await createdPresensi.save();
       
-      // createdPresensi.jadwal = jadwal;
-      // createdPresensi.mahasiswa = userId;
-      // await createdPresensi.save();
-      
-      // return response(res, {
-      //   code: 201,
-      //   success: true,
-      //   message: 'Presensi checked',
-      //   content: createdPresensi,
-      // });
+      return response(res, {
+        code: 201,
+        success: true,
+        message: 'Presensi checked',
+        content: createdPresensi,
+      });
     } catch (error) {
       return response(res, {
         code: 500,

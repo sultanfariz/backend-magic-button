@@ -21,9 +21,13 @@ const presensiSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Jadwal',
     },
-    mahasiswa: {
-      type: Schema.Types.ObjectId,
-      ref: 'Mahasiswa',
+    idMahasiswa: {
+      type: String,
+      required: true
+    },
+    usernameMahasiswa: {
+      type: String,
+      required: true
     },
   },
   {
