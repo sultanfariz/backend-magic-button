@@ -1,7 +1,9 @@
 const Link = require('../models/Link');
 const Vidcon = require('../models/Vidcon');
+const Record = require('../models/Record');
+const Jadwal = require('../models/Jadwal');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
-const { NotFoundError } = require('../errors');
+const { NotFoundError, DuplicatedDataError } = require('../errors');
 
 module.exports = {
   getAll: async (req, res) => {
@@ -70,7 +72,7 @@ module.exports = {
   // },
 
   filter: async (req, res) => {
-    const { type, matkul, idjadwal } = req.query;
+    const { type, matkul, jadwal } = req.query;
 
     try {
       const links = await Link.find({ type }, (err, link) => {
@@ -118,9 +120,14 @@ module.exports = {
   },
   
   addLinkVidcon: async (req, res) => {
-    const { link, platform } = req.body;
+    const { link, platform, jadwal } = req.body;
 
     try {
+      // check vidcon with duplicated jadwal data
+      const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
+      const vidcon = await Vidcon.findOne({ jadwal: dataJadwal });
+      if(vidcon) throw new DuplicatedDataError('Link Vidcon with this Jadwal value is already in database');
+      
       const createdLink = await Link.create({
         link,
         type: 'vidcon',
@@ -133,6 +140,10 @@ module.exports = {
       // create reference between Vidcon and Link models
       createdLink.vidcon = createdVidcon._id;
       await createdLink.save();
+
+      // create reference between Record and Jadwal models
+      createdVidcon.jadwal = dataJadwal;
+      await createdVidcon.save();
 
       return response(res, {
         code: 201,
@@ -153,11 +164,10 @@ module.exports = {
   },
   
   addLinkRecord: async (req, res) => {
-    const { link, idjadwal, pertemuan, tanggal } = req.body;
+    const { link, jadwal, pertemuan, tanggal } = req.body;
 
     try {
       let date = new Date(tanggal) ;
-      console.log(date);
 
       const createdLink = await Link.create({
         link,
@@ -174,7 +184,8 @@ module.exports = {
       await createdLink.save();
 
       // create reference between Record and Jadwal models
-      createdRecord.jadwal = idjadwal;
+      const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
+      createdRecord.jadwal = dataJadwal;
       await createdRecord.save();
 
       return response(res, {

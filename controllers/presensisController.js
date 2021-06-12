@@ -123,12 +123,15 @@ module.exports = {
     const { pertemuan, jadwal } = req.body;
     
     try {
+      // extract username and id Mahasiswa from token auth IPB
       const usernameMahasiswa = parseJwtPayload(res.locals.token)["ipbUid"];
       const idMahasiswa = parseJwtPayload(res.locals.token)["ipbMahasiswaID"];
-      
+      // find Jadwal data
       const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
       
-      const presensi = await Presensi.findOne({  
+      if(isEmpty(dataJadwal)) throw new NotFoundError('Jadwal not found');
+      
+      const presensi = await Presensi.find({  
         $and: [{ pertemuan }, { jadwal: dataJadwal }] 
       });
 
@@ -161,40 +164,40 @@ module.exports = {
     }
   },
 
-  update: async (req, res) => {
-    const { id } = req.params;
-    const { firstName, lastName, username, email, password } = req.body;
+  // update: async (req, res) => {
+  //   const { id } = req.params;
+  //   const { firstName, lastName, username, email, password } = req.body;
 
-    try {
-      const hashedPassword = await hashPassword(password);
+  //   try {
+  //     const hashedPassword = await hashPassword(password);
 
-      const updatedUser = await User.findOneAndUpdate(
-        id,
-        {
-          firstName,
-          lastName,
-          username,
-          email,
-          password: hashedPassword,
-        },
-        { new: true }
-      );
+  //     const updatedUser = await User.findOneAndUpdate(
+  //       id,
+  //       {
+  //         firstName,
+  //         lastName,
+  //         username,
+  //         email,
+  //         password: hashedPassword,
+  //       },
+  //       { new: true }
+  //     );
 
-      return response(res, {
-        code: 200,
-        success: true,
-        message: 'Successfully update user',
-        content: updatedUser,
-      });
-    } catch (error) {
-      return response(res, {
-        code: 500,
-        success: false,
-        message: error.message || 'Something went wrong!',
-        content: error,
-      });
-    }
-  },
+  //     return response(res, {
+  //       code: 200,
+  //       success: true,
+  //       message: 'Successfully update user',
+  //       content: updatedUser,
+  //     });
+  //   } catch (error) {
+  //     return response(res, {
+  //       code: 500,
+  //       success: false,
+  //       message: error.message || 'Something went wrong!',
+  //       content: error,
+  //     });
+  //   }
+  // },
 
   delete: async (req, res) => {
     const { id } = req.params;

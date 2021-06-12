@@ -9,11 +9,12 @@ const vidconSchema = new Schema(
     platform: {
       type: String,
       required: true,
-      enum: ['Zoom', 'Cisco Webex', 'Microsoft Teams', 'Google Meet'],
+      enum: ['Zoom', 'Cisco Webex', 'Microsoft Teams', 'Google Meet', 'Skype', 'Slack', 'Facetime'],
     },
     jadwal: {
       type: Schema.Types.ObjectId,
       ref: 'Jadwal',
+      unique: true,
     },
   },
   {
