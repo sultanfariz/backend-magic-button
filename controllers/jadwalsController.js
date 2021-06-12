@@ -6,6 +6,38 @@ const { create } = require('../models/Jadwal');
 
 module.exports = {
   getAll: async (req, res) => {
+    try {
+      const jadwal = await Jadwal.find();
+
+      if (isEmpty(jadwal)) {
+        throw new NotFoundError('Jadwal Not Found!');
+      }
+
+      return response(res, {
+        code: 200,
+        success: true,
+        message: 'Successfully get jadwal data!',
+        content: jadwal,
+      });
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
+
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
+
+  getMy: async (req, res) => {
     const { tanggal } = req.query;
     let apiResponse;
     let url;
@@ -91,38 +123,6 @@ module.exports = {
       });
     }
   },
-
-  // getAll: async (req, res) => {
-  //   try {
-  //     const jadwal = await Jadwal.find();
-
-  //     if (isEmpty(jadwal)) {
-  //       throw new NotFoundError('Jadwal Not Found!');
-  //     }
-
-  //     return response(res, {
-  //       code: 200,
-  //       success: true,
-  //       message: 'Successfully get jadwal data!',
-  //       content: jadwal,
-  //     });
-  //   } catch (error) {
-  //     if (error.name === 'NotFoundError') {
-  //       return response(res, {
-  //         code: 404,
-  //         success: false,
-  //         message: error.message,
-  //       });
-  //     }
-
-  //     return response(res, {
-  //       code: 500,
-  //       success: false,
-  //       message: error.message || 'Something went wrong!',
-  //       content: error,
-  //     });
-  //   }
-  // },
 
   // getByDate: async (req, res) => {
   //   const { tanggal } = req.query;

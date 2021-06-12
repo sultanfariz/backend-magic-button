@@ -193,7 +193,6 @@ module.exports = {
       await createdLink.save();
 
       // create reference between Record and Jadwal models
-      // const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
       createdRecord.jadwal = dataJadwal;
       await createdRecord.save();
 

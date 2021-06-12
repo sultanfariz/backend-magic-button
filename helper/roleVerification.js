@@ -18,7 +18,7 @@ module.exports = {
           throw new NotFoundError('Username Not Found');
   
         if (tokenrole === role) next();
-        else throw new WrongIdentityError('This user is not an admin');
+        else throw new WrongIdentityError(`This user is not an ${role}`);
       } catch (error) {
         if (error.name === 'NotFoundError')
           return response(res, {

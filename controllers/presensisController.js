@@ -3,7 +3,7 @@ const Presensi = require('../models/Presensi');
 const User = require('../models/User');
 const Jadwal = require('../models/Jadwal');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
-const { NotFoundError } = require('../errors');
+const { NotFoundError, DuplicatedDataError } = require('../errors');
 const { parseJwtPayload } = require('../helper/jwt');
 
 module.exports = {
@@ -135,7 +135,7 @@ module.exports = {
         $and: [{ pertemuan }, { jadwal: dataJadwal }] 
       });
 
-      if(presensi) throw new NotFoundError('Presensi already filled!')
+      if(presensi) throw new DuplicatedDataError('Presensi already filled!')
 
       const createdPresensi = await Presensi.create({
         waktuPresensi: Date.now(),
