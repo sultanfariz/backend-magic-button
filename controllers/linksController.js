@@ -167,7 +167,16 @@ module.exports = {
     const { link, jadwal, pertemuan, tanggal } = req.body;
 
     try {
-      let date = new Date(tanggal) ;
+      let date = new Date(tanggal);
+
+      // check record with duplicated attribute
+      const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
+      let record = await Record.findOne({ $and: [
+        {jadwal: dataJadwal},
+        {pertemuan},
+        {tanggal},
+      ]});
+      if(record) throw new DuplicatedDataError('Link Record with these attributes is already in database');
 
       const createdLink = await Link.create({
         link,
@@ -184,7 +193,7 @@ module.exports = {
       await createdLink.save();
 
       // create reference between Record and Jadwal models
-      const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
+      // const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
       createdRecord.jadwal = dataJadwal;
       await createdRecord.save();
 
