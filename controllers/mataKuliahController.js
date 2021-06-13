@@ -7,6 +7,7 @@ const fetch = require('node-fetch');
 
 let getMyMatkuls = async (req, res) => {
   let matkul = [];
+  const objectsMap = new Map();
   try {
     url = 'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya';
     apiResponse = await fetch(url, {
@@ -27,13 +28,17 @@ let getMyMatkuls = async (req, res) => {
     data.forEach(async (el) => {
       el['ListJadwal'].forEach(async (element) => {
         matkul.push({namaMatkul: element['NamaMK'], kodeMatkul: element['KodeMK']});
+        // matkul.push(JSON.stringify({namaMatkul: element['NamaMK'], kodeMatkul: element['KodeMK']}));
       });
     });
 
     if (isEmpty(matkul)) {
       throw new NotFoundError('Matkul Not Found!');
     }
-    return matkul;
+
+    
+
+    return Array.from(new Set(matkul));
   } catch (error) {
     return error;
   }

@@ -24,11 +24,8 @@ app.use(compression());
 app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms')
 );
-app.use(
-  cors({
-    origin: ['http://localhost:3000'],
-  })
-);
+app.use(cors());
+app.options('*', cors());
 
 app.use('/api/v1/', authRoutes);
 app.use('/api/v1/users', usersRoutes);
