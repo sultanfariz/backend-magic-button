@@ -81,7 +81,7 @@ module.exports = {
         // link.
         // console.log(story.author.name);
       });
-      // const links = await Link.find({ 
+      // const links = await Link.find({
       //   $and: [
       //     {
       //       type
@@ -89,7 +89,7 @@ module.exports = {
       //     // {
       //     //   kodeMatkul
       //     // }
-      //   ] 
+      //   ]
       // });
 
       if (isEmpty(links))
@@ -118,7 +118,7 @@ module.exports = {
       });
     }
   },
-  
+
   addLinkVidcon: async (req, res) => {
     const { link, platform, jadwal } = req.body;
 
@@ -126,8 +126,11 @@ module.exports = {
       // check vidcon with duplicated jadwal data
       const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
       const vidcon = await Vidcon.findOne({ jadwal: dataJadwal });
-      if(vidcon) throw new DuplicatedDataError('Link Vidcon with this Jadwal value is already in database');
-      
+      if (vidcon)
+        throw new DuplicatedDataError(
+          'Link Vidcon with this Jadwal value is already in database'
+        );
+
       const createdLink = await Link.create({
         link,
         type: 'vidcon',
@@ -162,7 +165,7 @@ module.exports = {
       });
     }
   },
-  
+
   addLinkRecord: async (req, res) => {
     const { link, jadwal, pertemuan, tanggal } = req.body;
 
@@ -171,12 +174,13 @@ module.exports = {
 
       // check record with duplicated attribute
       const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
-      let record = await Record.findOne({ $and: [
-        {jadwal: dataJadwal},
-        {pertemuan},
-        {tanggal},
-      ]});
-      if(record) throw new DuplicatedDataError('Link Record with these attributes is already in database');
+      let record = await Record.findOne({
+        $and: [{ jadwal: dataJadwal }, { pertemuan }, { tanggal }],
+      });
+      if (record)
+        throw new DuplicatedDataError(
+          'Link Record with these attributes is already in database'
+        );
 
       const createdLink = await Link.create({
         link,
@@ -186,7 +190,7 @@ module.exports = {
       const createdRecord = await Record.create({
         link: createdLink._id,
         tanggal: date,
-        pertemuan
+        pertemuan,
       });
       // create reference between Record and Link models
       createdLink.record = createdRecord._id;

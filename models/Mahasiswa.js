@@ -15,14 +15,16 @@ const mahasiswaSchema = new Schema(
       type: String,
       required: true,
     },
-    matkul: [{
-      id: {
-        type: Schema.Types.ObjectId,
-        ref: 'MataKuliah',
-        uniqueItems: true,
-        unique: true,
-      }
-    }],
+    matkul: [
+      {
+        id: {
+          type: Schema.Types.ObjectId,
+          ref: 'MataKuliah',
+          uniqueItems: true,
+          unique: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

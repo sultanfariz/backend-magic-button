@@ -48,10 +48,12 @@ module.exports = {
       res.locals.token = authHeader && authHeader.split(' ')[1];
       if (res.locals.token == null) throw new NotFoundError('Token Not Found');
       // verify the signature
-      const url =  "http://api.ipb.ac.id/v1/Authentication/ValidateToken?token=" + res.locals.token;
+      const url =
+        'http://api.ipb.ac.id/v1/Authentication/ValidateToken?token=' +
+        res.locals.token;
 
       const apiResponse = await fetch(url, {
-        method: 'GET', 
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
@@ -72,7 +74,7 @@ module.exports = {
           success: false,
           message: error.message,
         });
-    }finally{
+    } finally {
       next();
     }
   },

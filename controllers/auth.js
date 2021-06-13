@@ -13,29 +13,32 @@ module.exports = {
     const { username, password } = req.body;
 
     try {
-      const user = await User.findOne({username});
-      //login mahasiswa ipb 
-      if (isEmpty(user)){
+      const user = await User.findOne({ username });
+      //login mahasiswa ipb
+      if (isEmpty(user)) {
         // throw new NotFoundError("Username doesn't exists!");
-        const apiBody = {Username: username, Password: password }
-        const apiResponse = await fetch("http://api.ipb.ac.id/v1/Authentication/LoginMahasiswa", {
-          method: 'POST', 
-          headers: {
-            'Content-Type': 'application/json',
-            'X-IPBAPI-Token': process.env.ACCESS_TOKEN
-          },
-          body: JSON.stringify(apiBody)
-        })
-        if (apiResponse.status === 200){
+        const apiBody = { Username: username, Password: password };
+        const apiResponse = await fetch(
+          'http://api.ipb.ac.id/v1/Authentication/LoginMahasiswa',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
+            },
+            body: JSON.stringify(apiBody),
+          }
+        );
+        if (apiResponse.status === 200) {
           const data = await apiResponse.json();
           // store the token in user browser cookie
-          res.cookie('token', data["Token"], { httpOnly: true });
+          res.cookie('token', data['Token'], { httpOnly: true });
           return response(res, {
             code: 200,
             success: true,
             message: 'Login successfully!',
             content: {
-              data
+              data,
             },
           });
         }
@@ -44,7 +47,7 @@ module.exports = {
       const checkPassword = await bcrypt.compare(password, user.password);
       if (!checkPassword)
         throw new WrongPasswordError(
-          'Your password doesn\'t match with our records!'
+          "Your password doesn't match with our records!"
         );
 
       // const accessToken = generateAccessToken(user);

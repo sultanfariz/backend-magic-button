@@ -42,68 +42,71 @@ module.exports = {
     let apiResponse;
     let url;
     let data;
-    
+
     try {
-      if(tanggal){
+      if (tanggal) {
         // get jadwal by tanggal apabila request mengandung query jadwal tanggal
-        url = "http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalSaya?Tanggal=" + tanggal;
+        url =
+          'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalSaya?Tanggal=' +
+          tanggal;
         apiResponse = await fetch(url, {
-          method: 'GET', 
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
-            'Authorization': `Bearer ${res.locals.token}`,
+            Authorization: `Bearer ${res.locals.token}`,
           },
         });
         // cek status code (success/tidak)
-        if (apiResponse.status !== 200){
+        if (apiResponse.status !== 200) {
           throw new NotFoundError('Jadwal Not Found!');
         }
         data = await apiResponse.json();
-      }else{
+      } else {
         // get jadwal keseluruhan apabila request tidak mengandung query tanggal
-        url = "http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya";
+        url =
+          'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya';
         apiResponse = await fetch(url, {
-          method: 'GET', 
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
-            'Authorization': `Bearer ${res.locals.token}`,
+            Authorization: `Bearer ${res.locals.token}`,
           },
         });
-        
+
         // cek status code (success/tidak)
-        if (apiResponse.status !== 200){
+        if (apiResponse.status !== 200) {
           throw new NotFoundError('Jadwal Not Found!');
         }
 
         data = await apiResponse.json();
         // input data jadwal ke database
         data.forEach(async (el) => {
-          el["ListJadwal"].forEach(async (element) => {
+          el['ListJadwal'].forEach(async (element) => {
             // cek apakah data jadwal sudah ada dalam database
-            const jadwal = Jadwal.findOne({ idJadwal: element["JadwalId"] });
-            if(isEmpty(jadwal)){
+            const jadwal = Jadwal.findOne({ idJadwal: element['JadwalId'] });
+            if (isEmpty(jadwal)) {
               let createdJadwal = await Jadwal.create({
-                idJadwal: element["JadwalId"], 
-                day: el["Hari"], 
-                startHour: element["JamMulai"], 
-                endHour: element["JamSelesai"], 
-                jenisKelas: element["TipeKelas"], 
-                paralel: element["KelasParalel"],
-                namaMatkul: element["NamaMK"],
-                kodeMatkul: element["KodeMK"],
+                idJadwal: element['JadwalId'],
+                day: el['Hari'],
+                startHour: element['JamMulai'],
+                endHour: element['JamSelesai'],
+                jenisKelas: element['TipeKelas'],
+                paralel: element['KelasParalel'],
+                namaMatkul: element['NamaMK'],
+                kodeMatkul: element['KodeMK'],
               });
             }
           });
         });
       }
       return response(res, {
-        code: 200, 
+        code: 200,
         success: true,
         message: 'Get jadwal kuliah data successfully!',
         content: {
-          data
+          data,
         },
       });
     } catch (error) {
@@ -129,7 +132,7 @@ module.exports = {
 
   //   try {
   //     const apiResponse = await fetch(`http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalSaya?Tanggal=${tanggal}`, {
-  //       method: 'GET', 
+  //       method: 'GET',
   //       headers: {
   //         'Content-Type': 'application/json',
   //         'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
@@ -178,7 +181,7 @@ module.exports = {
   //       // link.
   //       // console.log(story.author.name);
   //     });
-  //     // const links = await Link.find({ 
+  //     // const links = await Link.find({
   //     //   $and: [
   //     //     {
   //     //       type
@@ -186,7 +189,7 @@ module.exports = {
   //     //     // {
   //     //     //   kodeMatkul
   //     //     // }
-  //     //   ] 
+  //     //   ]
   //     // });
 
   //     if (isEmpty(links))
@@ -215,15 +218,15 @@ module.exports = {
   //     });
   //   }
   // },
-  
+
   // insert: async (req, res) => {
   //   const { starthour, endhour, jeniskelas, paralel, idmatkul } = req.body;
 
   //   try {
   //     const createdJadwal = await Jadwal.create({
-  //       startHour: starthour, 
-  //       endHour: endhour, 
-  //       jenisKelas: jeniskelas, 
+  //       startHour: starthour,
+  //       endHour: endhour,
+  //       jenisKelas: jeniskelas,
   //       paralel,
   //     });
 
@@ -266,7 +269,7 @@ module.exports = {
   //     const date = new Date(tanggal);
   //     jadwal.date.push(date);
   //     await jadwal.save();
-      
+
   //     return response(res, {
   //       code: 200,
   //       success: true,
@@ -299,7 +302,7 @@ module.exports = {
   //     console.log("error");
   //     await jadwal.save();
   //     console.log("error");
-      
+
   //     return response(res, {
   //       code: 200,
   //       success: true,

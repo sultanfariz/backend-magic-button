@@ -45,8 +45,10 @@ module.exports = {
       const mahasiswa = await Mahasiswa.find({ user: user._id });
 
       if (isEmpty(user || mahasiswa))
-        throw new NotFoundError(`Mahasiswa with username ${username} not found!`);
-        
+        throw new NotFoundError(
+          `Mahasiswa with username ${username} not found!`
+        );
+
       return response(res, {
         code: 200,
         success: true,
@@ -120,16 +122,14 @@ module.exports = {
     try {
       let mahasiswa = await Mahasiswa.findOne({ _id: idmahasiswa });
       const matkul = await MataKuliah.findOne({ _id: idmatkul });
-      
-      if (isEmpty(mahasiswa))
-        throw new NotFoundError(`Mahasiswa not found!`);
 
-      if (isEmpty(matkul))
-        throw new NotFoundError(`Mata Kuliah not found!`);
+      if (isEmpty(mahasiswa)) throw new NotFoundError(`Mahasiswa not found!`);
+
+      if (isEmpty(matkul)) throw new NotFoundError(`Mata Kuliah not found!`);
 
       mahasiswa.matkul.push(matkul);
       await mahasiswa.save();
-      
+
       return response(res, {
         code: 201,
         success: true,
@@ -153,7 +153,7 @@ module.exports = {
     try {
       const hashedPassword = await hashPassword(password);
 
-      const user = await User.find({id});
+      const user = await User.find({ id });
       const updatedUser = await User.findOneAndUpdate(
         id,
         { username, password: hashedPassword },
@@ -163,7 +163,7 @@ module.exports = {
       // prevent password to be showed in response
       updatedUser.password = undefined;
       updatedUser = JSON.parse(JSON.stringify(updatedUser));
-      
+
       const updatedMahasiswa = await Mahasiswa.findOneAndUpdate(
         user.id,
         { nama, nim },
@@ -174,7 +174,8 @@ module.exports = {
         code: 200,
         success: true,
         message: 'Successfully update user',
-        content: updatedUser, updatedMahasiswa
+        content: updatedUser,
+        updatedMahasiswa,
       });
     } catch (error) {
       return response(res, {

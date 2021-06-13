@@ -12,8 +12,8 @@ const departemenSchema = new Schema(
       unique: true,
     },
     fakultas: {
-        type: Schema.Types.ObjectId,
-        ref: 'Fakultas',
+      type: Schema.Types.ObjectId,
+      ref: 'Fakultas',
     },
   },
   {

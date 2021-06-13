@@ -25,7 +25,7 @@ module.exports = {
         user.password = undefined;
         user = JSON.parse(JSON.stringify(user));
       });
-      
+
       return response(res, {
         code: 200,
         success: true,
@@ -145,9 +145,10 @@ module.exports = {
 
     try {
       const user = await User.findOne({ _id: id });
-      
-      if(user.role === 'admin') await Admin.deleteOne({ user: id });
-      else if(user.role === 'mahasiswa') await Mahasiswa.deleteOne({ user: id });
+
+      if (user.role === 'admin') await Admin.deleteOne({ user: id });
+      else if (user.role === 'mahasiswa')
+        await Mahasiswa.deleteOne({ user: id });
       await User.deleteOne({ _id: id });
 
       return response(res, {

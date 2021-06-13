@@ -16,7 +16,7 @@ module.exports = {
         const user = await User.findOne({ username });
         if (username === null || user === null)
           throw new NotFoundError('Username Not Found');
-  
+
         if (tokenrole === role) next();
         else throw new WrongIdentityError(`This user is not an ${role}`);
       } catch (error) {
@@ -26,7 +26,7 @@ module.exports = {
             success: false,
             message: error.message,
           });
-  
+
         if (error.name === 'WrongIdentityError')
           return response(res, {
             code: 403,
@@ -34,6 +34,6 @@ module.exports = {
             message: error.message,
           });
       }
-    }
-  }
+    };
+  },
 };

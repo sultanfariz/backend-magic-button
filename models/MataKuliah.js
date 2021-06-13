@@ -11,7 +11,7 @@ const matkulSchema = new Schema(
       required: true,
       unique: true,
     },
-    sks:{
+    sks: {
       type: String,
       required: true,
     },
@@ -19,14 +19,16 @@ const matkulSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Departemen',
     },
-    jadwal: [{
-      id: {
-        type: Schema.Types.ObjectId,
-        ref: 'Jadwal',
-        uniqueItems: true,
-        // unique: true,
-      }
-    }],
+    jadwal: [
+      {
+        id: {
+          type: Schema.Types.ObjectId,
+          ref: 'Jadwal',
+          uniqueItems: true,
+          // unique: true,
+        },
+      },
+    ],
   },
   {
     collection: 'matkul',

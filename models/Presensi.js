@@ -9,7 +9,8 @@ const presensiSchema = new Schema(
     },
     pertemuan: {
       type: Number,
-      min: 1, max: 14,
+      min: 1,
+      max: 14,
       required: true,
     },
     isChecked: {
@@ -23,11 +24,11 @@ const presensiSchema = new Schema(
     },
     idMahasiswa: {
       type: String,
-      required: true
+      required: true,
     },
     usernameMahasiswa: {
       type: String,
-      required: true
+      required: true,
     },
   },
   {

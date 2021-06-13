@@ -79,24 +79,23 @@ module.exports = {
     const userId = user._id;
     // const jadwal = await Jadwal.findOne({ matkul });
     // const jadwalId = jadwal._id;
-    
+
     try {
-        const presensi = await Presensi.find({ 
-          $and: [
-            {
-              mahasiswa: userId
-            },
-            {
-              jadwal: jadwalId
-            }
-          ] 
-        });
-      
-      if (isEmpty(presensi))
-        throw new NotFoundError(`Presensi not found!`);
-        
-        return response(res, {
-          code: 200,
+      const presensi = await Presensi.find({
+        $and: [
+          {
+            mahasiswa: userId,
+          },
+          {
+            jadwal: jadwalId,
+          },
+        ],
+      });
+
+      if (isEmpty(presensi)) throw new NotFoundError(`Presensi not found!`);
+
+      return response(res, {
+        code: 200,
         success: true,
         message: `Successfully get presensi data!`,
         content: presensi,
@@ -109,7 +108,7 @@ module.exports = {
           message: error.message,
         });
       }
-      
+
       return response(res, {
         code: 500,
         success: false,
@@ -118,36 +117,36 @@ module.exports = {
       });
     }
   },
-  
+
   checkPresensi: async (req, res) => {
     const { pertemuan, jadwal } = req.body;
-    
+
     try {
       // extract username and id Mahasiswa from token auth IPB
-      const usernameMahasiswa = parseJwtPayload(res.locals.token)["ipbUid"];
-      const idMahasiswa = parseJwtPayload(res.locals.token)["ipbMahasiswaID"];
+      const usernameMahasiswa = parseJwtPayload(res.locals.token)['ipbUid'];
+      const idMahasiswa = parseJwtPayload(res.locals.token)['ipbMahasiswaID'];
       // find Jadwal data
       const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
-      
-      if(isEmpty(dataJadwal)) throw new NotFoundError('Jadwal not found');
-      
-      const presensi = await Presensi.find({  
-        $and: [{ pertemuan }, { jadwal: dataJadwal }] 
+
+      if (isEmpty(dataJadwal)) throw new NotFoundError('Jadwal not found');
+
+      const presensi = await Presensi.find({
+        $and: [{ pertemuan }, { jadwal: dataJadwal }],
       });
 
-      if(presensi) throw new DuplicatedDataError('Presensi already filled!')
+      if (presensi) throw new DuplicatedDataError('Presensi already filled!');
 
       const createdPresensi = await Presensi.create({
         waktuPresensi: Date.now(),
         pertemuan,
         isChecked: true,
         idMahasiswa,
-        usernameMahasiswa
+        usernameMahasiswa,
       });
       // create reference between Jadwal and Presensi
       createdPresensi.jadwal = dataJadwal;
       await createdPresensi.save();
-      
+
       return response(res, {
         code: 201,
         success: true,
