@@ -1,6 +1,4 @@
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const Admin = require('../models/Admin');
 const { NotFoundError, WrongIdentityError } = require('../errors');
 const { response } = require('./bcrypt');
 const { parseJwtPayload } = require('./jwt');

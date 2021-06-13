@@ -11,14 +11,14 @@ const matkulSchema = new Schema(
       required: true,
       unique: true,
     },
-    sks: {
-      type: String,
-      required: true,
-    },
-    departemen: {
-      type: Schema.Types.ObjectId,
-      ref: 'Departemen',
-    },
+    // sks: {
+    //   type: String,
+    //   required: true,
+    // },
+    // departemen: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'Departemen',
+    // },
     jadwal: [
       {
         id: {

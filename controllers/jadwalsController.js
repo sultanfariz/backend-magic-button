@@ -46,9 +46,7 @@ module.exports = {
     try {
       if (tanggal) {
         // get jadwal by tanggal apabila request mengandung query jadwal tanggal
-        url =
-          'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalSaya?Tanggal=' +
-          tanggal;
+        url = 'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalSaya?Tanggal=' + tanggal;
         apiResponse = await fetch(url, {
           method: 'GET',
           headers: {
@@ -64,8 +62,7 @@ module.exports = {
         data = await apiResponse.json();
       } else {
         // get jadwal keseluruhan apabila request tidak mengandung query tanggal
-        url =
-          'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya';
+        url = 'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya';
         apiResponse = await fetch(url, {
           method: 'GET',
           headers: {

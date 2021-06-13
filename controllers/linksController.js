@@ -71,53 +71,82 @@ module.exports = {
   //   }
   // },
 
-  filter: async (req, res) => {
-    const { type, matkul, jadwal } = req.query;
+  filter: (type) => {
+    return async (req, res) => {
+      const { matkul, jadwal } = req.query;
+      let links;
+  
+      try {
+        // const links = await Link.find({ type }, (err, link) => {
+        //   if (err) throw err;
+        //   // story.author = author;
+        //   // link.
+        //   // console.log(story.author.name);
+        // });
+        // const links = await Link.find({
+        //   $and: [
+        //     {
+        //       type
+        //     },
+        //     // {
+        //     //   kodeMatkul
+        //     // }
+        //   ]
+        // });
+        if(type === 'Vidcon'){
+          links = await Vidcon.find({ jadwal });
+        }else if(type === 'Record'){
+          const jadwal = await Jadwal.find({ 
+            $and: [
+              {
+                kodeMatkul: matkul
+              },
+              // {
+              //   kodeMatkul
+              // }
+            ]
+          });
 
-    try {
-      const links = await Link.find({ type }, (err, link) => {
-        if (err) throw err;
-        // story.author = author;
-        // link.
-        // console.log(story.author.name);
-      });
-      // const links = await Link.find({
-      //   $and: [
-      //     {
-      //       type
-      //     },
-      //     // {
-      //     //   kodeMatkul
-      //     // }
-      //   ]
-      // });
-
-      if (isEmpty(links))
-        throw new NotFoundError(`Link with filter not found!`);
-
-      return response(res, {
-        code: 200,
-        success: true,
-        message: `Successfully get links data!`,
-        content: links,
-      });
-    } catch (error) {
-      if (error.name === 'NotFoundError') {
+          // links = await Record.find({ 
+          //   $and: [
+          //     {
+          //       matkul
+          //     },
+          //     // {
+          //     //   kodeMatkul
+          //     // }
+          //   ]
+          // });
+        }
+        console.log(links)
+  
+        if (isEmpty(links))
+          throw new NotFoundError(`Link with filter not found!`);
+  
         return response(res, {
-          code: 404,
+          code: 200,
+          success: true,
+          message: `Successfully get links data!`,
+          content: links,
+        });
+      } catch (error) {
+        if (error.name === 'NotFoundError') {
+          return response(res, {
+            code: 404,
+            success: false,
+            message: error.message,
+          });
+        }
+  
+        return response(res, {
+          code: 500,
           success: false,
-          message: error.message,
+          message: error.message || 'Something went wrong!',
+          content: error,
         });
       }
-
-      return response(res, {
-        code: 500,
-        success: false,
-        message: error.message || 'Something went wrong!',
-        content: error,
-      });
     }
-  },
+  }, 
 
   addLinkVidcon: async (req, res) => {
     const { link, platform, jadwal } = req.body;
