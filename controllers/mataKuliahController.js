@@ -6,8 +6,7 @@ const { NotFoundError } = require('../errors');
 const fetch = require('node-fetch');
 
 let getMyMatkuls = async (req, res) => {
-  let matkul = [];
-  const objectsMap = new Map();
+  const matkul = [];
   try {
     url = 'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya';
     apiResponse = await fetch(url, {
@@ -25,23 +24,22 @@ let getMyMatkuls = async (req, res) => {
     }
 
     data = await apiResponse.json();
-    data.forEach(async (el) => {
-      el['ListJadwal'].forEach(async (element) => {
-        matkul.push({namaMatkul: element['NamaMK'], kodeMatkul: element['KodeMK']});
-        // matkul.push(JSON.stringify({namaMatkul: element['NamaMK'], kodeMatkul: element['KodeMK']}));
-      });
-    });
-
+    data.map((item) => {
+        item.ListJadwal.map((it) => {
+            matkul.map((x) => console.log(x.KodeMK));
+            const cek = !matkul.some((i) => i.KodeMK == it.KodeMK);
+            if (cek) {
+              matkul.push({
+                  KodeMK: it.KodeMK,
+                  NamaMK: it.NamaMK
+              });
+            }
+        })
+    })
     if (isEmpty(matkul)) {
       throw new NotFoundError('Matkul Not Found!');
     }
-
-    matkul.forEach((obj => {
-      objectsMap.set(obj.kodeMatkul, obj);
-    }));
-    console.log(objectsMap);
-    return objectsMap;
-    // return Array.from(new Set(matkul));
+    return matkul;
   } catch (error) {
     return error;
   }

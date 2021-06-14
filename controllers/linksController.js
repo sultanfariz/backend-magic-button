@@ -43,19 +43,14 @@ module.exports = {
 
     try {
       const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
-      if (isEmpty(jadwal))
       if (isEmpty(dataJadwal))
         throw new NotFoundError(`Vidcon link with jadwal id ${jadwal} not found!`);
 
-      console.log(jadwal)
       const vidcon = await Vidcon.findOne({ jadwal: dataJadwal });
       if (isEmpty(vidcon))
         throw new NotFoundError(`Vidcon link with jadwal id ${jadwal} not found!`);
-      
-      console.log(vidcon)
-      
+          
       const link = await Link.findOne({ _id: vidcon["link"] });
-      console.log(link)
       if (isEmpty(link))
         throw new NotFoundError(`Vidcon link with jadwal id ${jadwal} not found!`);
 
