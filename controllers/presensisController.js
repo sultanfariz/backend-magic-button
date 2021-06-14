@@ -5,11 +5,155 @@ const Jadwal = require('../models/Jadwal');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError, DuplicatedDataError } = require('../errors');
 const { parseJwtPayload } = require('../helper/jwt');
+const { getMyMatkul } = require('./mataKuliahController');
+
+let getMyPresensiByMatkuls = (kodeMatkul) => {
+   return async (req, res) => {  
+    try {
+      // extract username and id Mahasiswa from token auth IPB
+      const usernameMahasiswa = parseJwtPayload(res.locals.token)['ipbUid'];
+      const idMahasiswa = parseJwtPayload(res.locals.token)['ipbMahasiswaID'];
+
+      const matkul = getMyMatkul()
+      console.log(matkul);
+
+      const jadwal = Jadwal.find()
+
+      const presensi = await Presensi.find({ $and: [
+        { usernameMahasiswa }, {  }
+      ] });
+  
+      if (isEmpty(presensi)) {
+        throw new NotFoundError('Presensi Not Found!');
+      }
+  
+      return response(res, {
+        code: 200,
+        success: true,
+        message: 'Successfully get presensi data!',
+        content: presensi,
+      });
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
+  
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+
+  } 
+}
 
 module.exports = {
   getAll: async (req, res) => {
     try {
       const presensi = await Presensi.find();
+
+      if (isEmpty(presensi)) {
+        throw new NotFoundError('Presensi Not Found!');
+      }
+
+      return response(res, {
+        code: 200,
+        success: true,
+        message: 'Successfully get presensi data!',
+        content: presensi,
+      });
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
+
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
+
+  getMyPresensi: async (req, res) => {
+    //  const { matkul } = req.q
+
+    try {
+      const presensi = await Presensi.find();
+
+      if (isEmpty(presensi)) {
+        throw new NotFoundError('Presensi Not Found!');
+      }
+
+      return response(res, {
+        code: 200,
+        success: true,
+        message: 'Successfully get presensi data!',
+        content: presensi,
+      });
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
+
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
+
+  getMyPresensiByMatkul: async (req, res) => {
+    const { kodeMatkul } = req.params;
+    let presensi = [];
+
+    try {
+      // extract username Mahasiswa from token auth IPB
+      const usernameMahasiswa = parseJwtPayload(res.locals.token)['ipbUid'];
+      let jadwal = await Jadwal.find({ $and: [
+        { kodeMatkul }
+      ]});
+
+      if (isEmpty(jadwal)) {
+        throw new NotFoundError('Matkul Not Found!');
+      }
+
+      for(let el of jadwal){
+        const presensis = await Presensi.find({ $and:[
+          { jadwal: el._id },
+          { usernameMahasiswa }
+        ]});
+        let jadwals = {
+          idJadwal: el.idJadwal,
+          day: el.day,
+          startHour: el.startHour,
+          endHour: el.endHour,
+          jenisKelas: el.jenisKelas,
+          paralel: el.paralel,
+          namaMatkul: el.namaMatkul,
+          kodeMatkul: el.kodeMatkul,
+          presensi: presensis,
+        };
+        presensi.push(jadwals);
+        console.log(presensi);
+      };
 
       if (isEmpty(presensi)) {
         throw new NotFoundError('Presensi Not Found!');

@@ -7,7 +7,7 @@ const router = Router();
 
 // router.get('/', authenticateToken, verifyRole('admin'), mataKuliahController.getAll);
 router.get('/my', authenticateTokenIPB, mataKuliahController.getMy);
-router.get('/tes', authenticateTokenIPB, mataKuliahController.getMyMatkul, mataKuliahController.tes);
+router.get('/tes', authenticateTokenIPB, mataKuliahController.getMyMatkulMiddleware, mataKuliahController.tes);
 // router.get('/:id', authenticateToken, verifyRole('admin'), mataKuliahController.getOne);
 // router.post('/insert', authenticateToken, verifyRole('admin'), mataKuliahController.insert);
 // router.delete('/:id', authenticateToken, verifyRole('admin'), mataKuliahController.delete);

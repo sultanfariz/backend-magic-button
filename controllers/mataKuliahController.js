@@ -26,7 +26,7 @@ let getMyMatkuls = async (req, res) => {
     data = await apiResponse.json();
     data.map((item) => {
         item.ListJadwal.map((it) => {
-            matkul.map((x) => console.log(x.KodeMK));
+            // matkul.map((x) => console.log(x.KodeMK));
             const cek = !matkul.some((i) => i.KodeMK == it.KodeMK);
             if (cek) {
               matkul.push({
@@ -197,10 +197,18 @@ module.exports = {
     }
   },
 
-  getMyMatkul: async (req, res, next) => {
+  getMyMatkulMiddleware: async (req, res, next) => {
     try {
       res.locals.matkul = await getMyMatkuls(req, res);
       next();
+    } catch (error) {
+      return error;
+    }
+  },
+
+  getMyMatkul: async (req, res, next) => {
+    try {
+      return await getMyMatkuls(req, res);
     } catch (error) {
       return error;
     }
