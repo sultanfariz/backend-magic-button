@@ -38,38 +38,51 @@ module.exports = {
     }
   },
 
-  // getOne: async (req, res) => {
-  //   const { username } = req.params;
+  getVidconByJadwal: async (req, res) => {
+    const { jadwal } = req.query;
 
-  //   try {
-  //     const user = await User.findOne({ username });
+    try {
+      const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
+      if (isEmpty(jadwal))
+      if (isEmpty(dataJadwal))
+        throw new NotFoundError(`Vidcon link with jadwal id ${jadwal} not found!`);
 
-  //     if (isEmpty(user))
-  //       throw new NotFoundError(`User with username ${username} not found!`);
+      console.log(jadwal)
+      const vidcon = await Vidcon.findOne({ jadwal: dataJadwal });
+      if (isEmpty(vidcon))
+        throw new NotFoundError(`Vidcon link with jadwal id ${jadwal} not found!`);
+      
+      console.log(vidcon)
+      
+      const link = await Link.findOne({ _id: vidcon["link"] });
+      console.log(link)
+      if (isEmpty(link))
+        throw new NotFoundError(`Vidcon link with jadwal id ${jadwal} not found!`);
 
-  //     return response(res, {
-  //       code: 200,
-  //       success: true,
-  //       message: `Successfully get ${username} data!`,
-  //       content: user,
-  //     });
-  //   } catch (error) {
-  //     if (error.name === 'NotFoundError') {
-  //       return response(res, {
-  //         code: 404,
-  //         success: false,
-  //         message: error.message,
-  //       });
-  //     }
 
-  //     return response(res, {
-  //       code: 500,
-  //       success: false,
-  //       message: error.message || 'Something went wrong!',
-  //       content: error,
-  //     });
-  //   }
-  // },
+      return response(res, {
+        code: 200,
+        success: true,
+        message: `Successfully get ${jadwal} vidcon data!`,
+        content: link,
+      });
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
+
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
 
   filter: (type) => {
     return async (req, res) => {
@@ -154,6 +167,8 @@ module.exports = {
     try {
       // check vidcon with duplicated jadwal data
       const dataJadwal = await Jadwal.findOne({ idJadwal: jadwal });
+      if (isEmpty(dataJadwal))
+        throw new NotFoundError('Jadwal is not found');
       const vidcon = await Vidcon.findOne({ jadwal: dataJadwal });
       if (vidcon)
         throw new DuplicatedDataError(

@@ -36,9 +36,12 @@ let getMyMatkuls = async (req, res) => {
       throw new NotFoundError('Matkul Not Found!');
     }
 
-    
-
-    return Array.from(new Set(matkul));
+    matkul.forEach((obj => {
+      objectsMap.set(obj.kodeMatkul, obj);
+    }));
+    console.log(objectsMap);
+    return objectsMap;
+    // return Array.from(new Set(matkul));
   } catch (error) {
     return error;
   }

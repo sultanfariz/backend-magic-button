@@ -1,11 +1,12 @@
 const { Router } = require('express');
 const linksController = require('../controllers/linksController');
-const { authenticateToken, generateAccessToken } = require('../helper/jwt');
+const { authenticateToken, authenticateTokenIPB } = require('../helper/jwt');
 const { verifyRole } = require('../helper/roleVerification');
 
 const router = Router();
 
 router.get('/', authenticateToken, verifyRole('admin'), linksController.getAll);
+router.get('/vidcon', authenticateTokenIPB, linksController.getVidconByJadwal);
 router.get('/filter', authenticateToken, linksController.filter);
 router.post('/vidcon', authenticateToken, verifyRole('admin'), linksController.addLinkVidcon);
 router.post('/record', authenticateToken, verifyRole('admin'), linksController.addLinkRecord);
