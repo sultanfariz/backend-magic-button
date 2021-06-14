@@ -7,6 +7,7 @@ const router = Router();
 
 router.get('/', authenticateToken, verifyRole('admin'), linksController.getAll);
 router.get('/vidcon', authenticateTokenIPB, linksController.getVidconByJadwal);
+router.post('/record', authenticateTokenIPB, linksController.getRecordByMatkul);
 router.get('/filter', authenticateToken, linksController.filter);
 router.post('/vidcon', authenticateToken, verifyRole('admin'), linksController.addLinkVidcon);
 router.post('/record', authenticateToken, verifyRole('admin'), linksController.addLinkRecord);

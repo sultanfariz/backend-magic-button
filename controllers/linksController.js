@@ -5,6 +5,50 @@ const Jadwal = require('../models/Jadwal');
 const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError, DuplicatedDataError } = require('../errors');
 
+let getRecordByMatkul = async (kodeMatkul) => {
+  let record = [];
+
+  try {
+    let jadwal = await Jadwal.find({ $and: [
+      { kodeMatkul }
+    ]});
+
+    if (isEmpty(jadwal)) {
+      throw new NotFoundError('Matkul Not Found!');
+    }
+
+    for(let el of jadwal){
+      const records = await Record.find({ $and:[
+        { jadwal: el._id },
+      ]});
+
+      let jadwals = {
+        idJadwal: el.idJadwal,
+        day: el.day,
+        startHour: el.startHour,
+        endHour: el.endHour,
+        jenisKelas: el.jenisKelas,
+        paralel: el.paralel,
+        namaMatkul: el.namaMatkul,
+        kodeMatkul: el.kodeMatkul,
+        record: records,
+      };
+      record.push(jadwals);
+      console.log(record);
+    }
+
+    // console.log()
+
+    if (isEmpty(record)) {
+      throw new NotFoundError('Record Not Found!');
+    }
+
+    return record;
+  } catch (error) {
+    return error;
+  }
+} 
+
 module.exports = {
   getAll: async (req, res) => {
     try {
@@ -60,6 +104,80 @@ module.exports = {
         success: true,
         message: `Successfully get ${jadwal} vidcon data!`,
         content: link,
+      });
+    } catch (error) {
+      if (error.name === 'NotFoundError') {
+        return response(res, {
+          code: 404,
+          success: false,
+          message: error.message,
+        });
+      }
+
+      return response(res, {
+        code: 500,
+        success: false,
+        message: error.message || 'Something went wrong!',
+        content: error,
+      });
+    }
+  },
+
+  getRecordByMatkul: async (req, res) => {
+    const { kodeMatkul } = req.body;
+    let record = [];
+
+    try {
+      let jadwal = await Jadwal.find({ $and: [
+        { kodeMatkul }
+      ]});
+  
+      if (isEmpty(jadwal)) {
+        throw new NotFoundError('Matkul Not Found!');
+      }
+  
+      for(let el of jadwal){
+        const records = await Record.find({ $and:[
+          { jadwal: el._id },
+        ]});
+
+        let recordan = []
+
+        for(let element of records){
+          const link = await Link.findOne({ _id: element.link });
+          
+          let recordObj = {
+            _id: element.id,
+            link: link.link,
+            pertemuan: element.pertemuan,
+            tanggal: element.tanggal,
+          }
+          recordan.push(recordObj);
+        }
+  
+        let jadwals = {
+          idJadwal: el.idJadwal,
+          day: el.day,
+          startHour: el.startHour,
+          endHour: el.endHour,
+          jenisKelas: el.jenisKelas,
+          paralel: el.paralel,
+          namaMatkul: el.namaMatkul,
+          kodeMatkul: el.kodeMatkul,
+          record: recordan,
+        };
+        record.push(jadwals);
+      }
+  
+      if (isEmpty(record)) {
+        throw new NotFoundError('Record Not Found!');
+      }
+
+      return response(res, {
+        code: 200,
+        success: true,
+        message: `Successfully get record data!`,
+        content: record,
       });
     } catch (error) {
       if (error.name === 'NotFoundError') {
