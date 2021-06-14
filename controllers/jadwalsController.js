@@ -82,7 +82,8 @@ module.exports = {
         data.forEach(async (el) => {
           el['ListJadwal'].forEach(async (element) => {
             // cek apakah data jadwal sudah ada dalam database
-            const jadwal = Jadwal.findOne({ idJadwal: element['JadwalId'] });
+            const jadwal = await Jadwal.findOne({ idJadwal: element['JadwalId'] });
+            console.log(jadwal);
             if (isEmpty(jadwal)) {
               let createdJadwal = await Jadwal.create({
                 idJadwal: element['JadwalId'],
