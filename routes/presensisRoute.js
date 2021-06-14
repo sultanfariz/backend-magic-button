@@ -7,8 +7,8 @@ const { verifyRole } = require('../helper/roleVerification');
 const router = Router();
 
 router.get('/', authenticateToken, verifyRole('admin'), presensisController.getAll);
-router.get('/my', authenticateTokenIPB, presensisController.getMyPresensi);
-router.get('/my/:kodeMatkul', authenticateTokenIPB, mataKuliahController.getMyMatkulMiddleware, presensisController.getMyPresensiByMatkul);
+router.get('/my', authenticateTokenIPB, mataKuliahController.getMyMatkulMiddleware, presensisController.getMyPresensi);
+router.get('/my/:kodeMatkul', authenticateTokenIPB, presensisController.getMyPresensiByMatkul);
 router.get('/:id', authenticateTokenIPB, presensisController.getOne);
 router.post('/check', authenticateTokenIPB, presensisController.checkPresensi);
 // router.post('/add-link-vidcon', authenticateToken, verifyRole('admin'), presensisController.addLinkVidcon);

@@ -1,4 +1,3 @@
-const Link = require('../models/Link');
 const Presensi = require('../models/Presensi');
 const User = require('../models/User');
 const Jadwal = require('../models/Jadwal');
@@ -7,51 +6,47 @@ const { NotFoundError, DuplicatedDataError } = require('../errors');
 const { parseJwtPayload } = require('../helper/jwt');
 const { getMyMatkul } = require('./mataKuliahController');
 
-let getMyPresensiByMatkuls = (kodeMatkul) => {
-   return async (req, res) => {  
-    try {
-      // extract username and id Mahasiswa from token auth IPB
-      const usernameMahasiswa = parseJwtPayload(res.locals.token)['ipbUid'];
-      const idMahasiswa = parseJwtPayload(res.locals.token)['ipbMahasiswaID'];
+let getMyPresensiByMatkuls = async (kodeMatkul, usernameMahasiswa) => {
+  let presensi = [];
 
-      const matkul = getMyMatkul()
-      console.log(matkul);
+  try {
+    let jadwal = await Jadwal.find({ $and: [
+      { kodeMatkul }
+    ]});
 
-      const jadwal = Jadwal.find()
-
-      const presensi = await Presensi.find({ $and: [
-        { usernameMahasiswa }, {  }
-      ] });
-  
-      if (isEmpty(presensi)) {
-        throw new NotFoundError('Presensi Not Found!');
-      }
-  
-      return response(res, {
-        code: 200,
-        success: true,
-        message: 'Successfully get presensi data!',
-        content: presensi,
-      });
-    } catch (error) {
-      if (error.name === 'NotFoundError') {
-        return response(res, {
-          code: 404,
-          success: false,
-          message: error.message,
-        });
-      }
-  
-      return response(res, {
-        code: 500,
-        success: false,
-        message: error.message || 'Something went wrong!',
-        content: error,
-      });
+    if (isEmpty(jadwal)) {
+      throw new NotFoundError('Matkul Not Found!');
     }
 
-  } 
-}
+    for(let el of jadwal){
+      const presensis = await Presensi.find({ $and:[
+        { jadwal: el._id },
+        { usernameMahasiswa }
+      ]});
+      let jadwals = {
+        idJadwal: el.idJadwal,
+        day: el.day,
+        startHour: el.startHour,
+        endHour: el.endHour,
+        jenisKelas: el.jenisKelas,
+        paralel: el.paralel,
+        namaMatkul: el.namaMatkul,
+        kodeMatkul: el.kodeMatkul,
+        presensi: presensis,
+      };
+      presensi.push(jadwals);
+      // console.log(presensi);
+    }
+
+    if (isEmpty(presensi)) {
+      throw new NotFoundError('Presensi Not Found!');
+    }
+
+    return presensi;
+  } catch (error) {
+    return error;
+  }
+} 
 
 module.exports = {
   getAll: async (req, res) => {
@@ -87,10 +82,20 @@ module.exports = {
   },
 
   getMyPresensi: async (req, res) => {
-    //  const { matkul } = req.q
+    let presensi = [];
 
     try {
-      const presensi = await Presensi.find();
+      // extract username Mahasiswa from token auth IPB
+      const usernameMahasiswa = parseJwtPayload(res.locals.token)['ipbUid'];
+
+      let matkul = res.locals.matkul.map((el) => {
+        return el.KodeMK;
+      });
+
+      for (let el of matkul){
+        presensi.push(await getMyPresensiByMatkuls(el, usernameMahasiswa));
+      }
+
 
       if (isEmpty(presensi)) {
         throw new NotFoundError('Presensi Not Found!');
