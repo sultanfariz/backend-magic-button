@@ -2,6 +2,8 @@ const { response, isEmpty } = require('../helper/bcrypt');
 const { NotFoundError } = require('../errors');
 const fetch = require('node-fetch');
 const Jadwal = require('../models/Jadwal');
+const Vidcon = require('../models/Vidcon');
+const Link = require('../models/Link');
 const { create } = require('../models/Jadwal');
 
 module.exports = {
@@ -60,6 +62,20 @@ module.exports = {
           throw new NotFoundError('Jadwal Not Found!');
         }
         data = await apiResponse.json();
+
+        for(let el of data.ListJadwal){
+          // set vidcon link to null
+          el.vidcon = {_id: null, link: null};
+          const jadwal = await Jadwal.findOne({ idJadwal: el.JadwalId });
+          if (isEmpty(jadwal)) {
+            throw new NotFoundError('Jadwal Not Found!');
+          }
+          const vidcon = await Vidcon.findOne({ jadwal: jadwal.id });
+          if (vidcon) {
+            const link = await Link.findOne({ _id: vidcon.link });
+            if(link) el.vidcon = {_id: link._id, link: link.link}
+          }
+        }
       } else {
         // get jadwal keseluruhan apabila request tidak mengandung query tanggal
         url = 'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya';
@@ -83,7 +99,6 @@ module.exports = {
           el['ListJadwal'].forEach(async (element) => {
             // cek apakah data jadwal sudah ada dalam database
             const jadwal = await Jadwal.findOne({ idJadwal: element['JadwalId'] });
-            console.log(jadwal);
             if (isEmpty(jadwal)) {
               let createdJadwal = await Jadwal.create({
                 idJadwal: element['JadwalId'],
