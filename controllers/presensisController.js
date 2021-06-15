@@ -283,7 +283,7 @@ module.exports = {
         $and: [{ pertemuan }, { jadwal: dataJadwal }],
       });
 
-      if (presensi) throw new DuplicatedDataError('Presensi already filled!');
+      if (Array.isArray(presensi) && (presensi.length > 0)) throw new DuplicatedDataError('Presensi already filled!');
 
       const createdPresensi = await Presensi.create({
         waktuPresensi: Date.now(),
