@@ -124,7 +124,7 @@ module.exports = {
   },
 
   getRecordByMatkul: async (req, res) => {
-    const { kodeMatkul } = req.body;
+    const { kodeMatkul } = req.query;
     let record = [];
 
     try {
