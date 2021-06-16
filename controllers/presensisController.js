@@ -5,20 +5,59 @@ const { response, isEmpty, hashPassword } = require('../helper/bcrypt');
 const { NotFoundError, DuplicatedDataError } = require('../errors');
 const { parseJwtPayload } = require('../helper/jwt');
 const { getMyMatkul } = require('./mataKuliahController');
+const fetch = require('node-fetch');
 
-let getMyPresensiByMatkuls = async (kodeMatkul, usernameMahasiswa) => {
+let getMyPresensiByMatkuls = async (kodeMatkul, usernameMahasiswa, tokenUser) => {
   let presensi = [];
+  let myJadwal = [];
+  let jadwalFiltered = [];
 
   try {
+    // let matkul = res.locals.matkul.map((el) => {
+    //   return el.KodeMK;
+    // });
+    // get jadwal keseluruhan apabila request tidak mengandung query tanggal
+    url = 'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya';
+    apiResponse = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-IPBAPI-Token': process.env.ACCESS_TOKEN,
+        Authorization: `Bearer ${tokenUser}`,
+      },
+    });
+
+    // cek status code (success/tidak)
+    if (apiResponse.status !== 200) {
+      throw new NotFoundError('Jadwal Not Found!');
+    }
+    
+    data = await apiResponse.json();
+
+    // extract jadwalid and store to array
+    for(let el of data){
+      for(let element of el.ListJadwal){
+        myJadwal.push(element.JadwalId)
+      }
+    }
+
     let jadwal = await Jadwal.find({ $and: [
       { kodeMatkul }
     ]});
+    
+    for(let el of jadwal){
+      for(let element of myJadwal){
+        if(el.idJadwal == element){
+          jadwalFiltered.push(el);
+        }
+      }
+    }
 
-    if (isEmpty(jadwal)) {
+    if (isEmpty(jadwalFiltered)) {
       throw new NotFoundError('Matkul Not Found!');
     }
 
-    for(let el of jadwal){
+    for(let el of jadwalFiltered){
       const presensis = await Presensi.find({ $and:[
         { jadwal: el._id },
         { usernameMahasiswa }
@@ -93,7 +132,7 @@ module.exports = {
       });
 
       for (let el of matkul){
-        presensi.push(await getMyPresensiByMatkuls(el, usernameMahasiswa));
+        presensi.push(await getMyPresensiByMatkuls(el, usernameMahasiswa, res.locals.token));
       }
 
 
