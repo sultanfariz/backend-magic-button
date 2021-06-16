@@ -37,8 +37,6 @@ let getRecordByMatkul = async (kodeMatkul) => {
       console.log(record);
     }
 
-    // console.log()
-
     if (isEmpty(record)) {
       throw new NotFoundError('Record Not Found!');
     }

@@ -13,9 +13,6 @@ let getMyPresensiByMatkuls = async (kodeMatkul, usernameMahasiswa, tokenUser) =>
   let jadwalFiltered = [];
 
   try {
-    // let matkul = res.locals.matkul.map((el) => {
-    //   return el.KodeMK;
-    // });
     // get jadwal keseluruhan apabila request tidak mengandung query tanggal
     url = 'http://api.ipb.ac.id/v1/jadwal/KuliahUjian/JadwalKuliahSesemesterSaya';
     apiResponse = await fetch(url, {
@@ -74,7 +71,6 @@ let getMyPresensiByMatkuls = async (kodeMatkul, usernameMahasiswa, tokenUser) =>
         presensi: presensis,
       };
       presensi.push(jadwals);
-      // console.log(presensi);
     }
 
     if (isEmpty(presensi)) {
@@ -240,52 +236,6 @@ module.exports = {
         code: 200,
         success: true,
         message: `Successfully get ${id} data!`,
-        content: presensi,
-      });
-    } catch (error) {
-      if (error.name === 'NotFoundError') {
-        return response(res, {
-          code: 404,
-          success: false,
-          message: error.message,
-        });
-      }
-
-      return response(res, {
-        code: 500,
-        success: false,
-        message: error.message || 'Something went wrong!',
-        content: error,
-      });
-    }
-  },
-
-  filter: async (req, res) => {
-    const { matkul } = req.query;
-    const username = parseJwtPayload(res.locals.token).username;
-    const user = await User.findOne({ username });
-    const userId = user._id;
-    // const jadwal = await Jadwal.findOne({ matkul });
-    // const jadwalId = jadwal._id;
-
-    try {
-      const presensi = await Presensi.find({
-        $and: [
-          {
-            mahasiswa: userId,
-          },
-          {
-            jadwal: jadwalId,
-          },
-        ],
-      });
-
-      if (isEmpty(presensi)) throw new NotFoundError(`Presensi not found!`);
-
-      return response(res, {
-        code: 200,
-        success: true,
-        message: `Successfully get presensi data!`,
         content: presensi,
       });
     } catch (error) {
